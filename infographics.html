@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">વિવેક: સાચો માર્ગદર્શક</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the body, setting default font and background */
+        body {
+            font-family: 'Hind Vadodara', sans-serif; /* Default Gujarati font */
+            background-color: #f0f9ff; /* Light blue background */
+            color: #333333; /* Dark gray text color for readability */
+            line-height: 1.6; /* Improved line spacing */
+        }
+        /* English language specific font */
+        body.lang-en {
+            font-family: 'Roboto', sans-serif;
+        }
+        /* Styling for section titles */
+        .section-title {
+            color: #008080; /* Teal color for titles */
+            font-size: 2.5rem; /* Large font size for prominence */
+            font-weight: 700; /* Bold font weight */
+            margin-bottom: 1.5rem; /* Space below titles */
+            text-align: center; /* Center align titles */
+        }
+        /* Card styling for content sections */
+        .card {
+            background-color: white; /* White background for cards */
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 6px 10px -3px rgba(0, 0, 0, 0.08); /* Enhanced shadow */
+            transition: transform 0.3s ease-in-out; /* Smooth hover effect */
+            padding: 2rem; /* Ample padding inside cards */
+            margin-bottom: 2rem; /* Space between cards */
+        }
+        /* Hover effect for cards */
+        .card:hover {
+            transform: translateY(-8px); /* Lift effect on hover */
+        }
+        /* Chart container to ensure responsiveness and aspect ratio */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px; /* Increased max-width for better chart display */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Fixed height for consistency */
+        }
+        /* Styling for highlight text, like statistics or key questions */
+        .stat-text {
+            color: #FF8C00; /* Orange color for emphasis */
+            font-weight: bold;
+            font-size: 2rem; /* Big font size */
+            text-align: center;
+            padding: 1rem;
+            background-color: #FFF3E0; /* Light orange background */
+            border-radius: 10px;
+        }
+        /* Styling for flow arrows in the decision process section */
+        .flow-arrow {
+            font-size: 3rem; /* Larger arrows */
+            color: #008080; /* Teal color */
+            margin: 1rem 0; /* Vertical margin for mobile view */
+        }
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 767px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            .stat-text {
+                font-size: 1.5rem;
+            }
+            /* Removed transform: rotate(90deg) to ensure ⬇️ points downwards on mobile */
+            .card {
+                padding: 1.5rem;
+            }
+            .lang-btn {
+                width: 100%; /* Full width buttons on mobile */
+            }
+            .comparison-table th, .comparison-table td {
+                padding: 10px;
+                font-size: 1rem;
+            }
+            .benefit-highlight h3 {
+                font-size: 1.4rem;
+            }
+            .benefit-highlight p {
+                font-size: 1rem;
+            }
+            .conclusion-card h2 {
+                font-size: 2.5rem;
+            }
+            .conclusion-card p {
+                font-size: 1.1rem;
+            }
+        }
+        /* List item styling with custom bullet points */
+        .icon-list li::before {
+            content: "✨"; /* Sparkle emoji as bullet */
+            color: #FF8C00; /* Orange color for bullet */
+            font-weight: bold;
+            display: inline-block;
+            width: 1.5em; /* Space for the bullet */
+            margin-left: -1.5em; /* Negative margin to align text */
+        }
+        /* Table styling */
+        .comparison-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1.5rem; /* Space above table */
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e2e8f0; /* Light gray border */
+            padding: 14px; /* More padding */
+            text-align: left;
+            font-size: 1.1rem; /* Slightly larger font */
+        }
+        .comparison-table th {
+            background-color: #E0F2F1; /* Light teal background for headers */
+            color: #008080; /* Teal text color */
+            font-weight: 700; /* Bold headers */
+        }
+        /* Highlight styling for benefit cards */
+        .benefit-highlight {
+            background-color: #FFF3E0; /* Light orange background */
+            border-left: 6px solid #FF8C00; /* Orange left border */
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        .benefit-highlight h3 {
+            font-size: 1.6rem; /* Larger benefit titles */
+            font-weight: 700;
+            color: #FF8C00; /* Orange color */
+            margin-bottom: 0.5rem;
+        }
+        .benefit-highlight p {
+            font-size: 1.1rem; /* Readable text size */
+        }
+        /* Styling for the conclusion card with gradient background */
+        .conclusion-card {
+             background: linear-gradient(135deg, #008080 0%, #004D40 100%); /* Teal to dark teal gradient */
+             color: white; /* White text on dark background */
+             padding: 3rem; /* More padding */
+             text-align: center;
+        }
+        .conclusion-card h2 {
+            color: #FFD700; /* Gold color for conclusion title */
+            font-size: 3rem; /* Very large title */
+        }
+        .conclusion-card p {
+            font-size: 1.2rem; /* Larger text for conclusion */
+        }
+        /* Language button styling */
+        .lang-btn {
+            transition: background-color 0.3s, color 0.3s;
+            border: 2px solid #FF8C00; /* Orange border */
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            color: #FF8C00;
+        }
+        .lang-btn.active {
+            background-color: #FF8C00; /* Active button background */
+            color: white; /* Active button text color */
+        }
+        /* General paragraph styling */
+        p {
+            font-size: 1.15rem; /* Slightly larger default paragraph font size */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 md:p-8">
+
+    <div class="mb-6 flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4">
+        <button id="btnGujarati" class="lang-btn active text-orange-600 font-semibold py-3 px-6 rounded-lg w-full sm:w-auto">ગુજરાતી</button>
+        <button id="btnEnglish" class="lang-btn text-orange-600 font-semibold py-3 px-6 rounded-lg w-full sm:w-auto">English</button>
+    </div>
+
+    <header class="text-center py-10 bg-teal-600 text-white rounded-xl shadow-2xl mb-12">
+        <h1 id="headerTitle" class="text-5xl md:text-6xl font-extrabold leading-tight">વિવેક: સાચો માર્ગદર્શક</h1>
+        <p id="headerSubtitle" class="text-2xl mt-4 max-w-2xl mx-auto">તમારા આંતરિક અવાજને ઓળખો અને જીવનને ઉન્નત બનાવો.</p>
+    </header>
+
+    <main class="space-y-12">
+
+        <section id="intro" class="card p-8 md:p-10">
+            <h2 id="introTitle" class="section-title">પરિચય: એક મહત્વપૂર્ણ પ્રશ્ન</h2>
+            <div class="text-xl space-y-5 bg-teal-50 p-7 rounded-xl shadow-inner">
+                <p><strong id="introYugLabel">યુગ:</strong> <span id="introYugText">"સંયમ, આજે આપણે બસ માટે રાહ જોતા હતા, ત્યારે અમે બધા ફોન પર કંઈક ને કંઈક જોતા હતા, ત્યારે તું આંખ બંધ કરીને શું કરતો હતો?"</span></p>
+                <p><strong id="introSamyamLabel">સંયમ:</strong> <span id="introSamyamText">"હું આંખ બંધ કરીને નવકાર મંત્રનું ધ્યાન કરતો હતો..."</span></p>
+                <p id="introQuestion" class="mt-8 stat-text p-5 bg-yellow-50 rounded-xl">
+                    "શું તમે તમારા 'વિવેક' ને પૂછીને નિર્ણયો લો છો?"
+                </p>
+                <p id="introExplanation" class="mt-5 text-center">આ પ્રશ્ન આપણને વિચારવા મજબૂર કરે છે કે આપણા નિર્ણયો પાછળ કઈ શક્તિ કામ કરે છે. ચાલો, વિવેકની આ સફરમાં જોડાઈએ.</p>
+            </div>
+        </section>
+
+        <section id="whatisvivek" class="card p-8 md:p-10">
+            <h2 id="whatisvivekTitle" class="section-title">વિભાગ ૧: વિવેક શું છે?</h2>
+            <div class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6 text-lg">
+                    <div class="bg-red-50 p-5 rounded-md">
+                        <h4 id="whatisvivekWithoutTitle" class="font-bold text-red-700 text-xl mb-2">વિવેક વિના (અર્થ):</h4>
+                        <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                            <li id="whatisvivekWithoutL1">પરિસ્થિતિમાં સારું-ખરાબ પારખવામાં અસમર્થતા.</li>
+                            <li id="whatisvivekWithoutL2">ફાયદાકારક અને નુકસાનકારક વચ્ચે ભેદ ન કરી શકવો.</li>
+                            <li id="whatisvivekWithoutL3">અયોગ્ય નિર્ણયો તરફ દોરી જવું.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-5 rounded-md">
+                        <h4 id="whatisvivekWithTitle" class="font-bold text-green-700 text-xl mb-2">વિવેક સાથે (અર્થ):</h4>
+                        <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                            <li id="whatisvivekWithL1">સંસ્કૃત ધાતુ 'વિચ્' (છૂટું પાડવું) પરથી બન્યો.</li>
+                            <li id="whatisvivekWithL2">કોઈપણ પરિસ્થિતિમાં સારું-ખરાબ, ફાયદાકારક-નુકસાનકારક પારખવાની શક્તિ.</li>
+                            <li id="whatisvivekWithL3">દરેક બાબતમાં સાચો રસ્તો બતાવનાર આંતરિક અવાજ.</li>
+                        </ul>
+                    </div>
+                </div>
+                <p id="whatisvivekConclusion" class="text-xl text-center mt-6">જેમ સંયમે ફોન જોવા અને ધ્યાન કરવા વચ્ચેનો તફાવત સમજાવ્યો, તેમ વિવેક આપણને દરેક બાબતમાં સાચો રસ્તો બતાવે છે.</p>
+            </div>
+        </section>
+
+        <section id="comparison-section" class="card p-8 md:p-10">
+            <h2 id="comparisonSectionTitle" class="section-title">વિભાગ ૨: તુલના: ફોનનો ઉપયોગ vs. ધ્યાન</h2>
+            <div class="bg-gray-50 p-7 rounded-xl shadow-lg">
+                <table class="comparison-table w-full text-lg">
+                    <thead>
+                        <tr>
+                            <th id="colAspect">બાબત</th>
+                            <th id="colPhone">ફોનનો ઉપયોગ (વિવેક વિના)</th>
+                            <th id="colMeditation">ધ્યાન (વિવેક સાથે)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="rowPurposeLabel"><strong>હેતુ</strong></td>
+                            <td id="rowPurposePhone">ટાઇમ પાસ, મનોરંજન (કદાચ બકવાસ)</td>
+                            <td id="rowPurposeMeditation">આત્મિક શાંતિ, આત્મકલ્યાણ</td>
+                        </tr>
+                        <tr>
+                            <td id="rowOutcomeLabel"><strong>પરિણામ</strong></td>
+                            <td id="rowOutcomePhone">સમયનો વ્યય, માનસિક અશાંતિ</td>
+                            <td id="rowOutcomeMeditation">મનની શાંતિ, શારીરિક સ્વાસ્થ્ય, આનંદ</td>
+                        </tr>
+                        <tr>
+                            <td id="rowLongTermLabel"><strong>લાંબા ગાળાનો ફાયદો</strong></td>
+                            <td id="rowLongTermPhone">નહિવત્ અથવા નકારાત્મક</td>
+                            <td id="rowLongTermMeditation">અનહદ, સર્વાંગી વિકાસ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="benefits" class="card p-8 md:p-10">
+            <h2 id="benefitsTitle" class="section-title">વિભાગ ૩: વિવેકના ફાયદા</h2>
+            <p id="benefitsIntro" class="text-xl mb-8 text-center max-w-3xl mx-auto">વિવેક અપનાવવાથી જીવનમાં અસંખ્ય ફાયદા થાય છે. તે માત્ર નિર્ણયો સુધારવામાં જ મદદ નથી કરતો, પરંતુ જીવનને સંપૂર્ણ રીતે બદલી નાખે છે.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitPeaceTitle" class="text-2xl font-bold text-orange-600 mb-3">🌟 મનની શાંતિ</h3>
+                    <p id="benefitPeaceText">વિવેક આપણને વ્યર્થ ચિંતાઓ અને નકારાત્મક વિચારોથી દૂર રાખી મનને શાંતિ આપે છે.</p>
+                </div>
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitHealthTitle" class="text-2xl font-bold text-orange-600 mb-3">💪 શારીરિક સ્વાસ્થ્ય</h3>
+                    <p id="benefitHealthText">યોગ્ય આહાર-વિહાર અને ટેવો પસંદ કરવામાં મદદ કરી શારીરિક સ્વાસ્થ્ય સુધારે છે.</p>
+                </div>
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitSoulTitle" class="text-2xl font-bold text-orange-600 mb-3">🧘 આત્માનું કલ્યાણ</h3>
+                    <p id="benefitSoulText">આધ્યાત્મિક માર્ગે પ્રગતિ કરી આત્માના કલ્યાણનો માર્ગ મોકળો કરે છે.</p>
+                </div>
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitDecisionsTitle" class="text-2xl font-bold text-orange-600 mb-3">🎯 સાચા નિર્ણયો</h3>
+                    <p id="benefitDecisionsText">દરેક પરિસ્થિતિમાં ફાયદા-નુકસાનનું વિશ્લેષણ કરી યોગ્ય નિર્ણય લેવાની ક્ષમતા આપે છે.</p>
+                </div>
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitRelationsTitle" class="text-2xl font-bold text-orange-600 mb-3">🤝 સારા સંબંધો</h3>
+                    <p id="benefitRelationsText">ગુસ્સો, અહંકાર જેવી નકારાત્મક ભાવનાઓ પર કાબૂ મેળવી સંબંધો મધુર બનાવે છે.</p>
+                </div>
+                <div class="benefit-highlight p-6 rounded-xl">
+                    <h3 id="benefitBestLifeTitle" class="text-2xl font-bold text-orange-600 mb-3">🚀 શ્રેષ્ઠ જીવન</h3>
+                    <p id="benefitBestLifeText">વિવેક આપણી જિંદગી બચાવી શકે છે, શ્રેષ્ઠ બનાવી શકે છે અને આપણને હંમેશ માટે સારા બનાવી શકે છે.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="example-posters" class="card p-8 md:p-10">
+            <h2 id="examplePostersTitle" class="section-title">વિભાગ ૪: ઉદાહરણ ૧: નકામા પોસ્ટર</h2>
+            <p id="examplePostersIntro" class="text-xl mb-4">રસ્તા પર ગંદુ પોસ્ટર દેખાય ત્યારે બે વિકલ્પ હોય છે:</p>
+            <div class="grid md:grid-cols-2 gap-6 text-lg">
+                <div class="bg-red-50 p-5 rounded-md">
+                    <h4 id="postersWithoutVivekTitle" class="font-bold text-red-700 text-xl mb-2">વિવેક વિના:</h4>
+                    <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                        <li id="postersWithoutVivekL1">પોસ્ટરને ધારી ધારીને જોવું.</li>
+                        <li id="postersWithoutVivekL2">મન ગંદુ થવું, ઈમેજ ડાઉન થવી.</li>
+                        <li id="postersWithoutVivekL3">ભણવામાં મન ન લાગવું, સમયનો બગાડ.</li>
+                        <li id="postersWithoutVivekL4">પરિણામ: નુકસાન જ નુકસાન.</li>
+                    </ul>
+                </div>
+                <div class="bg-green-50 p-5 rounded-md">
+                    <h4 id="postersWithVivekTitle" class="font-bold text-green-700 text-xl mb-2">વિવેક સાથે:</h4>
+                    <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                        <li id="postersWithVivekL1">પહેલી જ સેકન્ડે નજર ફેરવી લેવી.</li>
+                        <li id="postersWithVivekL2">મનની શુદ્ધતા જળવાઈ રહેવી.</li>
+                        <li id="postersWithVivekL3">લોકોમાં જેન્ટલમેન ગણાવું.</li>
+                        <li id="postersWithVivekL4">પરિણામ: સર્વાંગી ફાયદો.</li>
+                    </ul>
+                </div>
+            </div>
+            <p id="postersConclusion" class="mt-5 text-lg text-gray-700 text-center">પોસ્ટરવાળાઓને આપણા કલ્યાણની નહીં, પોતાની કમાણીની ચિંતા હોય છે. વિવેક આપણને સાચો માર્ગ બતાવે છે.</p>
+        </section>
+
+        <section id="example-tobacco" class="card p-8 md:p-10">
+            <h2 id="exampleTobaccoTitle" class="section-title">વિભાગ ૫: ઉદાહરણ ૨: તમાકુ</h2>
+            <p id="exampleTobaccoIntro" class="text-xl mb-4">તમાકુના પેકેટ પર "તમાકુ કેન્સરનું કારણ બને છે" લખેલું હોવા છતાં લોકો તેનું સેવન કરે છે. આ વિવેકના અભાવનું સ્પષ્ટ ઉદાહરણ છે.</p>
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div>
+                    <div class="bg-red-50 p-5 rounded-md mb-4">
+                        <h4 id="tobaccoWithoutVivekTitle" class="font-bold text-red-700 text-xl mb-2">વિવેક વિના:</h4>
+                        <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                            <li id="tobaccoWithoutVivekL1">ક્ષણિક આનંદ માટે લાંબા ગાળાની પીડા પસંદ કરવી.</li>
+                            <li id="tobaccoWithoutVivekL2">સ્વાસ્થ્યને ગંભીર નુકસાન પહોંચાડવું.</li>
+                            <li id="tobaccoWithoutVivekL3">આત્મ-નિયંત્રણનો અભાવ દર્શાવવો.</li>
+                            <li id="tobaccoWithoutVivekL4">પરિણામ: બીમારી અને દુઃખ.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-5 rounded-md">
+                        <h4 id="tobaccoWithVivekTitle" class="font-bold text-green-700 text-xl mb-2">વિવેક સાથે:</h4>
+                        <ul class="list-disc list-inside ml-4 mt-3 icon-list space-y-1">
+                            <li id="tobaccoWithVivekL1">ક્ષણિક આનંદનો ત્યાગ કરવો.</li>
+                            <li id="tobaccoWithVivekL2">સ્વસ્થ અને સુખી જીવન પસંદ કરવું.</li>
+                            <li id="tobaccoWithVivekL3">દીર્ઘકાલીન લાભો પર ધ્યાન કેન્દ્રિત કરવું.</li>
+                            <li id="tobaccoWithVivekL4">પરિણામ: સુખાકારી અને સંતોષ.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tobaccoChart"></canvas>
+                </div>
+            </div>
+            <p id="tobaccoConclusion" class="mt-5 text-lg text-gray-700 text-center">મૂર્ખતાનો અર્થ જ વિવેકશૂન્યતા છે. વિવેક આપણને આવા જોખમોથી બચાવે છે.</p>
+        </section>
+
+        <section id="example-other-tobaccos" class="card p-8 md:p-10">
+            <h2 id="exampleOtherTobaccosTitle" class="section-title">વિભાગ ૬: ઉદાહરણ ૩: અન્ય 'તમાકુ' સમાન વસ્તુઓ</h2>
+            <p id="exampleOtherTobaccosIntro" class="text-xl mb-5">જેમ તમાકુ શરીર માટે હાનિકારક છે, તેમ અન્ય ઘણી વસ્તુઓ આપણા મન, શરીર અને સંબંધો માટે નુકસાનકારક છે:</p>
+            <ul class="list-disc list-inside ml-4 space-y-3 text-xl icon-list">
+                <li><span class="font-semibold" id="otherTobaccoFoodLabel">🍔 બહારનું બિનઆરોગ્યપ્રદ ખાવાનું:</span> <span id="otherTobaccoFoodEffect">શરીરને નુકસાન.</span></li>
+                <li><span class="font-semibold" id="otherTobaccoMediaLabel">🎬 ગંદી ફિલ્મો, ક્લિપ્સ, પુસ્તકો:</span> <span id="otherTobaccoMediaEffect">મનને નુકસાન.</span></li>
+                <li><span class="font-semibold" id="otherTobaccoEmotionsLabel">😠 ગુસ્સો, ઈર્ષ્યા, અહંકાર, લોભ:</span> <span id="otherTobaccoEmotionsEffect">સ્વભાવ અને સંબંધોને નુકસાન.</span></li>
+            </ul>
+            <p id="otherTobaccosConclusion" class="mt-5 text-lg text-gray-700 text-center">વિવેક આ બધી બાબતોના પ્લસ-માઈનસ બતાવી, "ઈટ કિલ્સ" (It Kills) ની અદ્રશ્ય ચેતવણી આપણને સમજાવે છે.</p>
+        </section>
+
+        <section id="innerfriend" class="card p-8 md:p-10">
+            <h2 id="innerFriendTitle" class="section-title">વિભાગ ૭: વિવેક - આપણો આંતરિક મિત્ર</h2>
+            <p id="innerFriendIntro" class="text-xl mb-8 text-center max-w-3xl mx-auto">સંયમ કહે છે તેમ, વિવેક આપણો, તમારો, બધાનો આંતરિક મિત્ર છે. તે હંમેશા આપણી અંદર હોય છે, ફક્ત આપણે તેને સાંભળવાની અને તેની સલાહ લેવાની જરૂર છે.</p>
+            <div class="bg-teal-50 p-7 rounded-xl shadow-inner">
+                <h3 id="decisionProcessTitle" class="text-2xl font-bold text-teal-700 mb-6 text-center">વિવેક સાથે નિર્ણય પ્રક્રિયા:</h3>
+                <div class="flex flex-col md:flex-row items-center justify-around space-y-6 md:space-y-0 md:space-x-6 text-center">
+                    <div class="p-4 bg-white rounded-lg shadow-md w-full md:w-auto flex-shrink-0">
+                        <p id="step1Problem" class="text-xl font-bold">૧. સમસ્યા/પરિસ્થિતિ</p>
+                        <p id="step1ProblemDesc" class="text-base text-gray-600">(કોઈપણ મૂંઝવણ)</p>
+                    </div>
+                    <span class="flow-arrow block md:hidden">⬇️</span>
+                    <span class="flow-arrow hidden md:block">➡️</span>
+                    <div class="p-4 bg-white rounded-lg shadow-md w-full md:w-auto flex-shrink-0">
+                        <p id="step2AskVivek" class="text-xl font-bold">૨. વિવેકને પૂછવું</p>
+                        <p id="step2AskVivekDesc" class="text-base text-gray-600">(આંતરિક મંથન)</p>
+                    </div>
+                    <span class="flow-arrow block md:hidden">⬇️</span>
+                    <span class="flow-arrow hidden md:block">➡️</span>
+                    <div class="p-4 bg-white rounded-lg shadow-md w-full md:w-auto flex-shrink-0">
+                        <p id="step3RightDecision" class="text-xl font-bold">૩. સાચો નિર્ણય</p>
+                        <p id="step3RightDecisionDesc" class="text-base text-gray-600">(ફાયદાકારક વિકલ્પ)</p>
+                    </div>
+                    <span class="flow-arrow block md:hidden">⬇️</span>
+                    <span class="flow-arrow hidden md:block">➡️</span>
+                    <div class="p-4 bg-yellow-100 rounded-lg shadow-md w-full md:w-auto border-l-6 border-yellow-500 flex-shrink-0">
+                        <p id="step4PositiveOutcome" class="text-xl font-bold text-yellow-700">૪. સકારાત્મક પરિણામ</p>
+                        <p id="step4PositiveOutcomeDesc" class="text-base text-gray-600">(શાંતિ, સફળતા)</p>
+                    </div>
+                </div>
+            </div>
+            <p id="innerFriendConclusion" class="mt-8 text-xl text-center max-w-3xl mx-auto">કોઈપણ વસ્તુ, વ્યક્તિ, ઘટના, પરિસ્થિતિ કે ઈચ્છા - બધી જ બાબતોમાં જો આપણે વિવેકને પૂછીને કામ કરીએ, તો આપણે આ જિંદગી જીતી જઈશું.</p>
+        </section>
+
+        <section id="society" class="card p-8 md:p-10">
+            <h2 id="societyTitle" class="section-title">વિભાગ ૮: વિવેક અને સમાજ</h2>
+            <p id="societyIntro" class="text-xl mb-8 text-center max-w-3xl mx-auto">વિવેક ફક્ત વ્યક્તિગત જીવન માટે જ નહીં, પરંતુ સમાજ માટે પણ અત્યંત મહત્વપૂર્ણ છે. જો સમાજમાં વિવેકનું શિક્ષણ અને મહત્વ વધે, તો તેના દૂરગામી સકારાત્મક પરિણામો આવી શકે છે.</p>
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <p id="societySamyamView" class="text-xl mb-6">સંયમના મતે, જો સરકાર અબજો રૂપિયાના ખર્ચે અપાતા શિક્ષણને બદલે 'વિવેક'નું શિક્ષણ આપે, તો:</p>
+                    <ul class="list-disc list-inside ml-4 space-y-3 text-xl icon-list">
+                        <li id="societyBenefit1">આખા દેશનો ઉદ્ધાર થઈ જાય.</li>
+                        <li id="societyBenefit2">કોર્ટ, પોલીસ, જેલ, હોસ્પિટલનો બોજો હળવો થઈ જાય.</li>
+                        <li id="societyBenefit3">ભ્રષ્ટાચાર જેવી સમસ્યાઓ દૂર થઈ જાય.</li>
+                    </ul>
+                    <p id="societyConclusion" class="mt-5 text-lg text-gray-700 text-center">આપણી જાત પૂરતો તો આપણે 'વિવેક'નો લાભ ચોક્કસ લઈ શકીએ છીએ.</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="societyImpactChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="card p-8 md:p-10 conclusion-card">
+            <h2 id="finalConclusionTitle" class="section-title">વિભાગ ૯: નિષ્કર્ષ: વિવેક - એક અમૂલ્ય ભેટ</h2>
+            <div class="text-xl space-y-5 text-center">
+                <p class="italic"><strong id="conclusionYugLabel">યુગ:</strong> <span id="conclusionYugText">"થેન્ક્સ સંયમ, આજે તેં મને સાચો હીરો - 'વિવેક' આપ્યો. થેન્ક્સ અ લોટ."</span></p>
+                <p class="italic"><strong id="conclusionSamyamLabel">સંયમ:</strong> <span id="conclusionSamyamText">"વેલકમ, બટ ઈટ્સ ગોડ્સ ગિફ્ટ, નોટ માઈન."</span></p>
+                <p id="finalCallToAction" class="mt-10 text-3xl md:text-4xl font-extrabold p-6 bg-white bg-opacity-20 rounded-xl">
+                    ચાલો, આપણે સૌ આપણા 'વિવેક' નામના આંતરિક મિત્રની સલાહ લઈએ અને આપણા જીવનને વધુ સુંદર, શાંતિપૂર્ણ અને સફળ બનાવીએ!
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 mt-12 text-gray-600 text-lg">
+        <p id="footerText">&copy; ૨૦૨૫ વિવેક જાગૃતિ અભિયાન. સર્વાધિકાર સુરક્ષિત.</p>
+    </footer>
+
+    <script>
+        let currentLanguage = 'gu'; // Default language set to Gujarati
+        let tobaccoChartInstance; // Variable to hold the Chart.js instance for tobacco chart
+        let societyImpactChartInstance; // Variable to hold the Chart.js instance for society impact chart
+
+        // Translations object containing all text content for Gujarati and English
+        const translations = {
+            gu: {
+                pageTitle: "વિવેક: સાચો માર્ગદર્શક",
+                headerTitle: "વિવેક: સાચો માર્ગદર્શક",
+                headerSubtitle: "તમારા આંતરિક અવાજને ઓળખો અને જીવનને ઉન્નત બનાવો.",
+                introTitle: "પરિચય: એક મહત્વપૂર્ણ પ્રશ્ન",
+                introYugLabel: "યુગ:",
+                introYugText: "સંયમ, આજે આપણે બસ માટે રાહ જોતા હતા, ત્યારે અમે બધા ફોન પર કંઈક ને કંઈક જોતા હતા, ત્યારે તું આંખ બંધ કરીને શું કરતો હતો?",
+                introSamyamLabel: "સંયમ:",
+                introSamyamText: "હું આંખ બંધ કરીને નવકાર મંત્રનું ધ્યાન કરતો હતો...",
+                introQuestion: "\"શું તમે તમારા 'વિવેક' ને પૂછીને નિર્ણયો લો છો?\"",
+                introExplanation: "આ પ્રશ્ન આપણને વિચારવા મજબૂર કરે છે કે આપણા નિર્ણયો પાછળ કઈ શક્તિ કામ કરે છે. ચાલો, વિવેકની આ સફરમાં જોડાઈએ.",
+                whatisvivekTitle: "વિભાગ ૧: વિવેક શું છે?",
+                whatisvivekWithoutTitle: "વિવેક વિના (અર્થ):",
+                whatisvivekWithoutL1: "પરિસ્થિતિમાં સારું-ખરાબ પારખવામાં અસમર્થતા.",
+                whatisvivekWithoutL2: "ફાયદાકારક અને નુકસાનકારક વચ્ચે ભેદ ન કરી શકવો.",
+                whatisvivekWithoutL3: "અયોગ્ય નિર્ણયો તરફ દોરી જવું.",
+                whatisvivekWithTitle: "વિવેક સાથે (અર્થ):",
+                whatisvivekWithL1: "સંસ્કૃત ધાતુ 'વિચ્' (છૂટું પાડવું) પરથી બન્યો.",
+                whatisvivekWithL2: "કોઈપણ પરિસ્થિતિમાં સારું-ખરાબ, ફાયદાકારક-નુકસાનકારક પારખવાની શક્તિ.",
+                whatisvivekWithL3: "દરેક બાબતમાં સાચો રસ્તો બતાવનાર આંતરિક અવાજ.",
+                whatisvivekConclusion: "જેમ સંયમે ફોન જોવા અને ધ્યાન કરવા વચ્ચેનો તફાવત સમજાવ્યો, તેમ વિવેક આપણને દરેક બાબતમાં સાચો રસ્તો બતાવે છે.",
+                comparisonSectionTitle: "વિભાગ ૨: તુલના: ફોનનો ઉપયોગ vs. ધ્યાન",
+                colAspect: "બાબત",
+                colPhone: "ફોનનો ઉપયોગ (વિવેક વિના)",
+                colMeditation: "ધ્યાન (વિવેક સાથે)",
+                rowPurposeLabel: "હેતુ",
+                rowPurposePhone: "ટાઇમ પાસ, મનોરંજન (કદાચ બકવાસ)",
+                rowPurposeMeditation: "આત્મિક શાંતિ, આત્મકલ્યાણ",
+                rowOutcomeLabel: "પરિણામ",
+                rowOutcomePhone: "સમયનો વ્યય, માનસિક અશાંતિ",
+                rowOutcomeMeditation: "મનની શાંતિ, શારીરિક સ્વાસ્થ્ય, આનંદ",
+                rowLongTermLabel: "લાંબા ગાળાનો ફાયદો",
+                rowLongTermPhone: "નહિવત્ અથવા નકારાત્મક",
+                rowLongTermMeditation: "અનહદ, સર્વાંગી વિકાસ",
+                benefitsTitle: "વિભાગ ૩: વિવેકના ફાયદા",
+                benefitsIntro: "વિવેક અપનાવવાથી જીવનમાં અસંખ્ય ફાયદા થાય છે. તે માત્ર નિર્ણયો સુધારવામાં જ મદદ નથી કરતો, પરંતુ જીવનને સંપૂર્ણ રીતે બદલી નાખે છે.",
+                benefitPeaceTitle: "🌟 મનની શાંતિ",
+                benefitPeaceText: "વિવેક આપણને વ્યર્થ ચિંતાઓ અને નકારાત્મક વિચારોથી દૂર રાખી મનને શાંતિ આપે છે.",
+                benefitHealthTitle: "💪 શારીરિક સ્વાસ્થ્ય",
+                benefitHealthText: "યોગ્ય આહાર-વિહાર અને ટેવો પસંદ કરવામાં મદદ કરી શારીરિક સ્વાસ્થ્ય સુધારે છે.",
+                benefitSoulTitle: "🧘 આત્માનું કલ્યાણ",
+                benefitSoulText: "આધ્યાત્મિક માર્ગે પ્રગતિ કરી આત્માના કલ્યાણનો માર્ગ મોકળો કરે છે.",
+                benefitDecisionsTitle: "🎯 સાચા નિર્ણયો",
+                benefitDecisionsText: "દરેક પરિસ્થિતિમાં ફાયદા-નુકસાનનું વિશ્લેષણ કરી યોગ્ય નિર્ણય લેવાની ક્ષમતા આપે છે.",
+                benefitRelationsTitle: "🤝 સારા સંબંધો",
+                benefitRelationsText: "ગુસ્સો, અહંકાર જેવી નકારાત્મક ભાવનાઓ પર કાબૂ મેળવી સંબંધો મધુર બનાવે છે.",
+                benefitBestLifeTitle: "🚀 શ્રેષ્ઠ જીવન",
+                benefitBestLifeText: "વિવેક આપણી જિંદગી બચાવી શકે છે, શ્રેષ્ઠ બનાવી શકે છે અને આપણને હંમેશ માટે સારા બનાવી શકે છે.",
+                examplePostersTitle: "વિભાગ ૪: ઉદાહરણ ૧: નકામા પોસ્ટર",
+                examplePostersIntro: "રસ્તા પર ગંદુ પોસ્ટર દેખાય ત્યારે બે વિકલ્પ હોય છે:",
+                postersWithoutVivekTitle: "વિવેક વિના:",
+                postersWithoutVivekL1: "પોસ્ટરને ધારી ધારીને જોવું.",
+                postersWithoutVivekL2: "મન ગંદુ થવું, ઈમેજ ડાઉન થવી.",
+                postersWithoutVivekL3: "ભણવામાં મન ન લાગવું, સમયનો બગાડ.",
+                postersWithoutVivekL4: "પરિણામ: નુકસાન જ નુકસાન.",
+                postersWithVivekTitle: "વિવેક સાથે:",
+                postersWithVivekL1: "પહેલી જ સેકન્ડે નજર ફેરવી લેવી.",
+                postersWithVivekL2: "મનની શુદ્ધતા જળવાઈ રહેવી.",
+                postersWithVivekL3: "લોકોમાં જેન્ટલમેન ગણાવું.",
+                postersWithVivekL4: "પરિણામ: સર્વાંગી ફાયદો.",
+                postersConclusion: "પોસ્ટરવાળાઓને આપણા કલ્યાણની નહીં, પોતાની કમાણીની ચિંતા હોય છે. વિવેક આપણને સાચો માર્ગ બતાવે છે.",
+                exampleTobaccoTitle: "વિભાગ ૫: ઉદાહરણ ૨: તમાકુ",
+                exampleTobaccoIntro: "તમાકુના પેકેટ પર \"તમાકુ કેન્સરનું કારણ બને છે\" લખેલું હોવા છતાં લોકો તેનું સેવન કરે છે. આ વિવેકના અભાવનું સ્પષ્ટ ઉદાહરણ છે.",
+                tobaccoWithoutVivekTitle: "વિવેક વિના:",
+                tobaccoWithoutVivekL1: "ક્ષણિક આનંદ માટે લાંબા ગાળાની પીડા પસંદ કરવી.",
+                tobaccoWithoutVivekL2: "સ્વાસ્થ્યને ગંભીર નુકસાન પહોંચાડવું.",
+                tobaccoWithoutVivekL3: "આત્મ-નિયંત્રણનો અભાવ દર્શાવવો.",
+                tobaccoWithoutVivekL4: "પરિણામ: બીમારી અને દુઃખ.",
+                tobaccoWithVivekTitle: "વિવેક સાથે:",
+                tobaccoWithVivekL1: "ક્ષણિક આનંદનો ત્યાગ કરવો.",
+                tobaccoWithVivekL2: "સ્વસ્થ અને સુખી જીવન પસંદ કરવું.",
+                tobaccoWithVivekL3: "દીર્ઘકાલીન લાભો પર ધ્યાન કેન્દ્રિત કરવું.",
+                tobaccoWithVivekL4: "પરિણામ: સુખાકારી અને સંતોષ.",
+                tobaccoConclusion: "મૂર્ખતાનો અર્થ જ વિવેકશૂન્યતા છે. વિવેક આપણને આવા જોખમોથી બચાવે છે.",
+                tobaccoChartLabel1: "સ્વાસ્થ્ય જોખમો (%)",
+                tobaccoChartLabel2: "સ્વસ્થ જીવન (%)",
+                tobaccoChartDatasetLabel: "તમાકુનું સેવન",
+                exampleOtherTobaccosTitle: "વિભાગ ૬: ઉદાહરણ ૩: અન્ય 'તમાકુ' સમાન વસ્તુઓ",
+                exampleOtherTobaccosIntro: "જેમ તમાકુ શરીર માટે હાનિકારક છે, તેમ અન્ય ઘણી વસ્તુઓ આપણા મન, શરીર અને સંબંધો માટે નુકસાનકારક છે:",
+                otherTobaccoFoodLabel: "🍔 બહારનું બિનઆરોગ્યપ્રદ ખાવાનું:",
+                otherTobaccoFoodEffect: "શરીરને નુકસાન.",
+                otherTobaccoMediaLabel: "🎬 ગંદી ફિલ્મો, ક્લિપ્સ, પુસ્તકો:",
+                otherTobaccoMediaEffect: "મનને નુકસાન.",
+                otherTobaccoEmotionsLabel: "😠 ગુસ્સો, ઈર્ષ્યા, અહંકાર, લોભ:",
+                otherTobaccoEmotionsEffect: "સ્વભાવ અને સંબંધોને નુકસાન.",
+                otherTobaccosConclusion: "વિવેક આ બધી બાબતોના પ્લસ-માઈનસ બતાવી, \"ઈટ કિલ્સ\" (It Kills) ની અદ્રશ્ય ચેતવણી આપણને સમજાવે છે.",
+                innerFriendTitle: "વિભાગ ૭: વિવેક - આપણો આંતરિક મિત્ર",
+                innerFriendIntro: "સંયમ કહે છે તેમ, વિવેક આપણો, તમારો, બધાનો આંતરિક મિત્ર છે. તે હંમેશા આપણી અંદર હોય છે, ફક્ત આપણે તેને સાંભળવાની અને તેની સલાહ લેવાની જરૂર છે.",
+                decisionProcessTitle: "વિવેક સાથે નિર્ણય પ્રક્રિયા:",
+                step1Problem: "૧. સમસ્યા/પરિસ્થિતિ",
+                step1ProblemDesc: "(કોઈપણ મૂંઝવણ)",
+                step2AskVivek: "૨. વિવેકને પૂછવું",
+                step2AskVivekDesc: "(આંતરિક મંથન)",
+                step3RightDecision: "૩. સાચો નિર્ણય",
+                step3RightDecisionDesc: "(ફાયદાકારક વિકલ્પ)",
+                step4PositiveOutcome: "૪. સકારાત્મક પરિણામ",
+                step4PositiveOutcomeDesc: "(શાંતિ, સફળતા)",
+                innerFriendConclusion: "કોઈપણ વસ્તુ, વ્યક્તિ, ઘટના, પરિસ્થિતિ કે ઈચ્છા - બધી જ બાબતોમાં જો આપણે વિવેકને પૂછીને કામ કરીએ, તો આપણે આ જિંદગી જીતી જઈશું.",
+                societyTitle: "વિભાગ ૮: વિવેક અને સમાજ",
+                societyIntro: "વિવેક ફક્ત વ્યક્તિગત જીવન માટે જ નહીં, પરંતુ સમાજ માટે પણ અત્યંત મહત્વપૂર્ણ છે. જો સમાજમાં વિવેકનું શિક્ષણ અને મહત્વ વધે, તો તેના દૂરગામી સકારાત્મક પરિણામો આવી શકે છે.",
+                societySamyamView: "સંયમના મતે, જો સરકાર અબજો રૂપિયાના ખર્ચે અપાતા શિક્ષણને બદલે 'વિવેક'નું શિક્ષણ આપે, તો:",
+                societyBenefit1: "આખા દેશનો ઉદ્ધાર થઈ જાય.",
+                societyBenefit2: "કોર્ટ, પોલીસ, જેલ, હોસ્પિટલનો બોજો હળવો થઈ જાય.",
+                societyBenefit3: "ભ્રષ્ટાચાર જેવી સમસ્યાઓ દૂર થઈ જાય.",
+                societyConclusion: "આપણી જાત પૂરતો તો આપણે 'વિવેક'નો લાભ ચોક્કસ લઈ શકીએ છીએ.",
+                societyChartDataset1Label: "વિવેક શિક્ષણ પહેલાં (કાલ્પનિક સૂચકાંક)",
+                societyChartDataset2Label: "વિવેક શિક્ષણ પછી (કાલ્પનિક સૂચકાંક)",
+                societyChartLabelCorruption: "ભ્રષ્ટાચાર",
+                societyChartLabelCrime: "ગુનાખોરી",
+                societyChartLabelDisease: "રોગચાળો",
+                societyChartLabelDisputes: "કૌટુંબિક વિવાદ",
+                finalConclusionTitle: "વિભાગ ૯: નિષ્કર્ષ: વિવેક - એક અમૂલ્ય ભેટ",
+                conclusionYugLabel: "યુગ:",
+                conclusionYugText: "થેન્ક્સ સંયમ, આજે તેં મને સાચો હીરો - 'વિવેક' આપ્યો. થેન્ક્સ અ લોટ.",
+                conclusionSamyamLabel: "સંયમ:",
+                conclusionSamyamText: "વેલકમ, બટ ઈટ્સ ગોડ્સ ગિફ્ટ, નોટ માઈન.",
+                finalCallToAction: "ચાલો, આપણે સૌ આપણા 'વિવેક' નામના આંતરિક મિત્રની સલાહ લઈએ અને આપણા જીવનને વધુ સુંદર, શાંતિપૂર્ણ અને સફળ બનાવીએ!",
+                footerText: "© ૨૦૨૫ વિવેક જાગૃતિ અભિયાન. સર્વાધિકાર સુરક્ષિત."
+            },
+            en: {
+                pageTitle: "Vivek: The True Guide",
+                headerTitle: "Vivek: The True Guide",
+                headerSubtitle: "Recognize your inner voice and elevate your life.",
+                introTitle: "Introduction: An Important Question",
+                introYugLabel: "Yug:",
+                introYugText: "Samyam, today while we were waiting for the bus, all of us were looking at something on our phones. What were you doing with your eyes closed?",
+                introSamyamLabel: "Samyam:",
+                introSamyamText: "I was meditating on the Navkar Mantra with my eyes closed...",
+                introQuestion: "\"Do you make decisions by consulting your 'Vivek'?\"",
+                introExplanation: "This question compels us to think about the power behind our decisions. Let's embark on this journey of Vivek.",
+                whatisvivekTitle: "Section 1: What is Vivek?",
+                whatisvivekWithoutTitle: "Without Vivek (Meaning):",
+                whatisvivekWithoutL1: "Inability to discern good from bad in a situation.",
+                whatisvivekWithoutL2: "Unable to differentiate between beneficial and harmful.",
+                whatisvivekWithoutL3: "Leading to inappropriate decisions.",
+                whatisvivekWithTitle: "With Vivek (Meaning):",
+                whatisvivekWithL1: "Derived from Sanskrit root 'vich' (to separate).",
+                whatisvivekWithL2: "The power to discern what is good/bad, beneficial/harmful in any situation.",
+                whatisvivekWithL3: "An inner voice that shows the right path in every matter.",
+                whatisvivekConclusion: "Just as Samyam explained the difference between watching the phone and meditating, Vivek shows us the right path in every matter.",
+                comparisonSectionTitle: "Section 2: Comparison: Phone Usage vs. Meditation",
+                colAspect: "Aspect",
+                colPhone: "Phone Usage (Without Vivek)",
+                colMeditation: "Meditation (With Vivek)",
+                rowPurposeLabel: "Purpose",
+                rowPurposePhone: "Time pass, entertainment (perhaps trivial)",
+                rowPurposeMeditation: "Inner peace, spiritual well-being",
+                rowOutcomeLabel: "Outcome",
+                rowOutcomePhone: "Waste of time, mental unrest",
+                rowOutcomeMeditation: "Peace of mind, physical health, joy",
+                rowLongTermLabel: "Long-term Benefit",
+                rowLongTermPhone: "Negligible or negative",
+                rowLongTermMeditation: "Immense, holistic development",
+                benefitsTitle: "Section 3: Benefits of Vivek",
+                benefitsIntro: "Adopting Vivek brings numerous benefits in life. It not only helps in improving decisions but completely transforms life.",
+                benefitPeaceTitle: "🌟 Peace of Mind",
+                benefitPeaceText: "Vivek keeps us away from futile worries and negative thoughts, providing peace of mind.",
+                benefitHealthTitle: "💪 Physical Health",
+                benefitHealthText: "It improves physical health by helping choose appropriate diet, lifestyle, and habits.",
+                benefitSoulTitle: "🧘 Spiritual Well-being",
+                benefitSoulText: "It paves the way for spiritual progress and the well-being of the soul.",
+                benefitDecisionsTitle: "🎯 Right Decisions",
+                benefitDecisionsText: "It gives the ability to make the right decision by analyzing pros and cons in every situation.",
+                benefitRelationsTitle: "🤝 Good Relationships",
+                benefitRelationsText: "It helps control negative emotions like anger and ego, making relationships sweeter.",
+                benefitBestLifeTitle: "🚀 Best Life",
+                benefitBestLifeText: "Vivek can save our life, make it the best, and make us good forever.",
+                examplePostersTitle: "Section 4: Example 1: Harmful Posters",
+                examplePostersIntro: "When you see an inappropriate poster on the road, there are two options:",
+                postersWithoutVivekTitle: "Without Vivek:",
+                postersWithoutVivekL1: "Staring at the poster.",
+                postersWithoutVivekL2: "Mind gets polluted, image suffers.",
+                postersWithoutVivekL3: "Unable to concentrate on studies, waste of time.",
+                postersWithoutVivekL4: "Result: Loss and only loss.",
+                postersWithVivekTitle: "With Vivek:",
+                postersWithVivekL1: "Averting your gaze at the very first second.",
+                postersWithVivekL2: "Purity of mind is maintained.",
+                postersWithVivekL3: "Considered a gentleman among people.",
+                postersWithVivekL4: "Result: Overall benefit.",
+                postersConclusion: "Poster creators care about their wealth, not our welfare. Vivek shows us the right path.",
+                exampleTobaccoTitle: "Section 5: Example 2: Tobacco",
+                exampleTobaccoIntro: "Despite warnings like \"Tobacco causes cancer\" on packets, people consume it. This is a clear example of the lack of Vivek.",
+                tobaccoWithoutVivekTitle: "Without Vivek:",
+                tobaccoWithoutVivekL1: "Choosing long-term pain for momentary pleasure.",
+                tobaccoWithoutVivekL2: "Causing severe damage to health.",
+                tobaccoWithoutVivekL3: "Demonstrating lack of self-control.",
+                tobaccoWithoutVivekL4: "Result: Illness and suffering.",
+                tobaccoWithVivekTitle: "With Vivek:",
+                tobaccoWithVivekL1: "Renouncing momentary pleasure.",
+                tobaccoWithVivekL2: "Choosing a healthy and happy life.",
+                tobaccoWithVivekL3: "Focusing on long-term benefits.",
+                tobaccoWithVivekL4: "Result: Well-being and satisfaction.",
+                tobaccoConclusion: "Foolishness itself means lack of Vivek. Vivek protects us from such dangers.",
+                tobaccoChartLabel1: "Health Risks (%)",
+                tobaccoChartLabel2: "Healthy Life (%)",
+                tobaccoChartDatasetLabel: "Tobacco Consumption",
+                exampleOtherTobaccosTitle: "Section 6: Example 3: Other 'Tobacco-like' Things",
+                exampleOtherTobaccosIntro: "Just as tobacco is harmful to the body, many other things are harmful to our mind, body, and relationships:",
+                otherTobaccoFoodLabel: "🍔 Unhealthy outside food:",
+                otherTobaccoFoodEffect: "Harms the body.",
+                otherTobaccoMediaLabel: "🎬 Bad movies, clips, books:",
+                otherTobaccoMediaEffect: "Harms the mind.",
+                otherTobaccoEmotionsLabel: "😠 Anger, jealousy, ego, greed:",
+                otherTobaccoEmotionsEffect: "Harms nature and relationships.",
+                otherTobaccosConclusion: "Vivek shows the pros and cons of all these things and makes us understand the invisible warning - \"It Kills\".",
+                innerFriendTitle: "Section 7: Vivek - Our Inner Friend",
+                innerFriendIntro: "As Samyam says, Vivek is our, yours, everyone's inner friend. It is always within us; we just need to listen to it and take its advice.",
+                decisionProcessTitle: "Decision-making Process with Vivek:",
+                step1Problem: "1. Problem/Situation",
+                step2AskVivek: "2. Ask Vivek",
+                step2AskVivekDesc: "(Inner contemplation)",
+                step3RightDecision: "3. Right Decision",
+                step3RightDecisionDesc: "(Beneficial option)",
+                step4PositiveOutcome: "4. Positive Outcome",
+                step4PositiveOutcomeDesc: "(Peace, success)",
+                innerFriendConclusion: "If we can work by consulting Vivek in all matters - any thing, any person, any incident, any situation, any desire - we will win this life.",
+                societyTitle: "Section 8: Vivek and Society",
+                societyIntro: "Vivek is extremely important not only for individual life but also for society. If the education and importance of Vivek increase in society, it can have far-reaching positive results.",
+                societySamyamView: "According to Samyam, if the government provides 'Vivek' education instead of other education that costs billions:",
+                societyBenefit1: "The entire country would be uplifted.",
+                societyBenefit2: "The burden on courts, police, jails, hospitals would be lightened.",
+                societyBenefit3: "Problems like corruption would be eliminated.",
+                societyConclusion: "We can definitely take the benefit of 'Vivek' for ourselves.",
+                societyChartDataset1Label: "Before Vivek Education (Hypothetical Index)",
+                societyChartDataset2Label: "After Vivek Education (Hypothetical Index)",
+                societyChartLabelCorruption: "Corruption",
+                societyChartLabelCrime: "Crime Rate",
+                societyChartLabelDisease: "Epidemics",
+                societyChartLabelDisputes: "Family Disputes",
+                finalConclusionTitle: "Section 9: Conclusion: Vivek - A Priceless Gift",
+                conclusionYugLabel: "Yug:",
+                conclusionYugText: "Thanks Samyam, today you gave me the real diamond - 'Vivek'. Thanks a lot.",
+                conclusionSamyamLabel: "Samyam:",
+                conclusionSamyamText: "Welcome, but it's God's gift, not mine.",
+                finalCallToAction: "Let us all consult our inner friend named 'Vivek' and make our lives more beautiful, peaceful, and successful!",
+                footerText: "© 2025 Vivek Awareness Campaign. All rights reserved."
+            }
+        };
+
+        /**
+         * Wraps long labels for chart axes to prevent overlap.
+         * @param {string} str - The original label string.
+         * @param {number} maxWidth - The maximum width in characters before wrapping.
+         * @returns {string|string[]} - The wrapped label (array of strings) or original string.
+         */
+        function wrapLabel(str, maxWidth) {
+            if (typeof str !== 'string' || !str) return str;
+            const words = str.split(' ');
+            let currentLine = '';
+            const lines = [];
+            for (const word of words) {
+                // Check if adding the next word exceeds maxWidth and if currentLine is not empty
+                if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine.trim()); // Add current line to lines array
+                    currentLine = word + ' '; // Start new line with the current word
+                } else {
+                    currentLine += word + ' '; // Add word to current line
+                }
+            }
+            lines.push(currentLine.trim()); // Add the last line
+            return lines.length > 1 ? lines : lines[0] || ''; // Return array if wrapped, else single string
+        }
+        
+        /**
+         * Common tooltip callback for Chart.js to handle wrapped labels in tooltips.
+         * Ensures the full label is displayed in the tooltip.
+         */
+        const commonTooltipCallback = {
+            title: function(tooltipItems) {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' '); // Join wrapped label array into a single string for tooltip
+                } else {
+                  return label;
+                }
+            }
+        };
+
+        /**
+         * Updates the text content of various HTML elements based on the selected language.
+         * @param {string} lang - The language code ('gu' for Gujarati, 'en' for English).
+         */
+        function updateTextContent(lang) {
+            const trans = translations[lang];
+            for (const key in trans) {
+                const element = document.getElementById(key);
+                if (element) {
+                    // Special handling for elements with innerHTML (like those with <span> for bolding)
+                    if (key.startsWith('tobaccoWithoutVivekL') || key.startsWith('tobaccoWithVivekL') || key === 'tobaccoWithoutVivekTitle' || key === 'tobaccoWithVivekTitle') {
+                        element.textContent = trans[key]; // Use textContent for list items
+                    } else if (key === 'tobaccoWithoutVivek' || key === 'tobaccoWithVivek') {
+                        // These are no longer paragraphs but titles, handled by tobaccoWithoutVivekTitle/tobaccoWithVivekTitle
+                        // This block might not be needed anymore if the structure is fully list-based
+                    } else {
+                        element.textContent = trans[key];
+                    }
+                }
+            }
+            // Set the document's language attribute and update body class for font styling
+            document.documentElement.lang = lang;
+            document.body.className = `bg-gray-100 text-gray-800 p-4 md:p-8 lang-${lang}`;
+        }
+
+        /**
+         * Updates the data and labels of the Chart.js instances based on the selected language.
+         * @param {string} lang - The language code ('gu' for Gujarati, 'en' for English).
+         */
+        function updateCharts(lang) {
+            const trans = translations[lang];
+
+            // Update Tobacco Chart (now a Bar Chart)
+            if (tobaccoChartInstance) {
+                tobaccoChartInstance.data.labels = [trans.tobaccoChartLabel1, trans.tobaccoChartLabel2];
+                tobaccoChartInstance.data.datasets[0].label = trans.tobaccoChartDatasetLabel;
+                tobaccoChartInstance.update(); // Redraw the chart
+            }
+
+            // Update Society Impact Chart (Bar Chart)
+            if (societyImpactChartInstance) {
+                const originalLabelsSociety = [
+                    trans.societyChartLabelCorruption, 
+                    trans.societyChartLabelCrime, 
+                    trans.societyChartLabelDisease, 
+                    trans.societyChartLabelDisputes
+                ];
+                // Wrap labels for x-axis to prevent overlap
+                societyImpactChartInstance.data.labels = originalLabelsSociety.map(label => wrapLabel(label, 16));
+                societyImpactChartInstance.data.datasets[0].label = trans.societyChartDataset1Label;
+                societyImpactChartInstance.data.datasets[1].label = trans.societyChartDataset2Label;
+                societyImpactChartInstance.update(); // Redraw the chart
+            }
+        }
+        
+        /**
+         * Changes the current language of the page.
+         * @param {string} lang - The language code ('gu' for Gujarati, 'en' for English).
+         */
+        function changeLanguage(lang) {
+            currentLanguage = lang; // Update global language variable
+            updateTextContent(lang); // Update all static text
+            updateCharts(lang); // Update chart labels
+
+            // Update active state for language buttons
+            document.getElementById('btnGujarati').classList.toggle('active', lang === 'gu');
+            document.getElementById('btnEnglish').classList.toggle('active', lang === 'en');
+            document.getElementById('btnGujarati').classList.toggle('bg-orange-500', lang === 'gu');
+            document.getElementById('btnGujarati').classList.toggle('text-white', lang === 'gu');
+            document.getElementById('btnEnglish').classList.toggle('bg-orange-500', lang === 'en');
+            document.getElementById('btnEnglish').classList.toggle('text-white', lang === 'en');
+        }
+
+        /**
+         * Initializes the Chart.js instances for both charts.
+         * This function is called once when the DOM is loaded.
+         * @param {string} lang - The initial language for chart labels.
+         */
+        function initializeCharts(lang) {
+            const trans = translations[lang];
+
+            // Tobacco Chart (now a Bar Chart)
+            const tobaccoCtx = document.getElementById('tobaccoChart').getContext('2d');
+            tobaccoChartInstance = new Chart(tobaccoCtx, {
+                type: 'bar', // Changed to 'bar' chart type
+                data: {
+                    labels: [trans.tobaccoChartLabel1, trans.tobaccoChartLabel2],
+                    datasets: [{
+                        label: trans.tobaccoChartDatasetLabel,
+                        data: [75, 25], // Example data: 75% health risks, 25% healthy life without Vivek
+                        backgroundColor: ['#FF8C00', '#008080'], // Orange and Teal colors
+                        borderColor: ['#E67E22', '#00695C'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#333333', font: {size: 12} },
+                            grid: { color: '#e0e0e0' }
+                        },
+                        x: {
+                            ticks: { color: '#333333', font: {size: 12} },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#333333', font: { size: 14 }}},
+                        tooltip: { callbacks: commonTooltipCallback }
+                    }
+                }
+            });
+
+            // Society Impact Chart (Bar Chart)
+            const societyImpactCtx = document.getElementById('societyImpactChart').getContext('2d');
+            const originalLabelsSociety = [
+                trans.societyChartLabelCorruption, 
+                trans.societyChartLabelCrime, 
+                trans.societyChartLabelDisease, 
+                trans.societyChartLabelDisputes
+            ];
+            // Wrap labels for x-axis to prevent overlap on smaller screens
+            const wrappedLabelsSociety = originalLabelsSociety.map(label => wrapLabel(label, 16));
+
+            societyImpactChartInstance = new Chart(societyImpactCtx, {
+                type: 'bar', // Bar chart type
+                data: {
+                    labels: wrappedLabelsSociety,
+                    datasets: [{
+                        label: trans.societyChartDataset1Label,
+                        data: [80, 70, 60, 75], // Hypothetical data for 'before Vivek education'
+                        backgroundColor: '#FF8C00', // Orange color
+                        borderColor: '#E67E22',
+                        borderWidth: 1
+                    }, {
+                        label: trans.societyChartDataset2Label,
+                        data: [30, 25, 20, 30], // Hypothetical data for 'after Vivek education'
+                        backgroundColor: '#008080', // Teal color
+                        borderColor: '#00695C',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#333333', font: {size: 12} },
+                            grid: { color: '#e0e0e0' }
+                        },
+                        x: {
+                            ticks: { color: '#333333', font: {size: 12} },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#333333', font: { size: 14 }}},
+                        tooltip: { callbacks: commonTooltipCallback }
+                    }
+                }
+            });
+        }
+
+        // Event listener for when the DOM content is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts(currentLanguage); // Initialize charts with the default language
+            changeLanguage(currentLanguage); // Set initial text content and language button state
+
+            // Add event listeners to language buttons
+            document.getElementById('btnGujarati').addEventListener('click', () => changeLanguage('gu'));
+            document.getElementById('btnEnglish').addEventListener('click', () => changeLanguage('en'));
+        });
+    </script>
+</body>
+</html>

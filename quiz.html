@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>વિવેક : સાચા ખોટા ની પરખ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Gujarati', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        .quiz-container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .language-switcher button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .language-switcher button.active {
+            background-color: #4F46E5; /* Indigo 600 */
+            color: white;
+        }
+        .language-switcher button:not(.active) {
+            background-color: #E0E7FF; /* Indigo 100 */
+            color: #3730A3; /* Indigo 700 */
+        }
+        .question-text {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 16px;
+            color: #1F2937; /* Gray 800 */
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #D1D5DB; /* Gray 300 */
+            border-radius: 8px;
+            background-color: #F9FAFB; /* Gray 50 */
+            color: #374151; /* Gray 700 */
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-button:hover {
+            background-color: #F3F4F6; /* Gray 100 */
+            border-color: #9CA3AF; /* Gray 400 */
+        }
+        .option-button.selected {
+            background-color: #DBEAFE; /* Blue 100 */
+            border-color: #2563EB; /* Blue 600 */
+            font-weight: 500;
+        }
+        .option-button.correct {
+            background-color: #D1FAE5; /* Green 100 */
+            border-color: #059669; /* Green 600 */
+            color: #047857; /* Green 700 */
+        }
+        .option-button.incorrect {
+            background-color: #FEE2E2; /* Red 100 */
+            border-color: #DC2626; /* Red 600 */
+            color: #B91C1C; /* Red 700 */
+        }
+        .feedback-text {
+            margin-top: 12px;
+            font-weight: 500;
+        }
+        .next-button, .restart-button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            background-color: #4F46E5; /* Indigo 600 */
+            transition: background-color 0.3s ease;
+        }
+        .next-button:hover, .restart-button:hover {
+            background-color: #4338CA; /* Indigo 700 */
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #E5E7EB; /* Gray 200 */
+            border-radius: 9999px;
+            height: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4F46E5; /* Indigo 600 */
+            border-radius: 9999px;
+            transition: width 0.3s ease-in-out;
+        }
+        .score-text {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #1F2937; /* Gray 800 */
+        }
+        /* Gujarati font for specific elements */
+        [lang="gu"] .question-text, 
+        [lang="gu"] .option-button,
+        [lang="gu"] .feedback-text,
+        [lang="gu"] .score-text,
+        [lang="gu"] #quizTitle,
+        [lang="gu"] #nextButton,
+        [lang="gu"] #restartButton,
+        [lang="gu"] #resultTitle,
+        [lang="gu"] #finalScoreText,
+        [lang="gu"] #correctText,
+        [lang="gu"] #incorrectText {
+            font-family: 'Noto Sans Gujarati', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="quiz-container">
+        <div class="language-switcher text-center mb-6">
+            <button id="langGu" onclick="switchLanguage('gu')" class="active">ગુજરાતી</button>
+            <button id="langEn" onclick="switchLanguage('en')">English</button>
+        </div>
+
+        <h1 id="quizTitle" class="text-2xl font-bold text-center mb-2 text-indigo-700">વિવેક : સાચા ખોટા ની પરખ</h1>
+        <p id="quizSubtitle" class="text-sm text-center text-gray-500 mb-6">તમારી સમજ ચકાસો</p>
+
+
+        <div id="quizArea">
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <div id="questionContainer" class="mb-4">
+                <p id="questionText" class="question-text"></p>
+                <div id="optionsContainer"></div>
+            </div>
+            <div id="feedbackArea" class="mb-4">
+                <p id="feedbackText" class="feedback-text"></p>
+            </div>
+            <button id="nextButton" onclick="handleNext()" class="w-full next-button">આગળ</button>
+        </div>
+
+        <div id="resultArea" class="hidden text-center">
+            <h2 id="resultTitle" class="text-2xl font-bold mb-4 text-indigo-700">પરિણામ</h2>
+            <p id="finalScoreText" class="score-text mb-2"></p>
+            <p id="finalMessage" class="text-md mb-6"></p>
+            <button id="restartButton" onclick="restartQuiz()" class="restart-button">ફરીથી શરૂ કરો</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Global State ---
+        let currentLanguage = 'gu';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let userAnswers = []; // To store user's selected option index for review (optional)
+        let answerChecked = false; // To prevent multiple score increments
+
+        // --- UI Elements ---
+        const quizTitleEl = document.getElementById('quizTitle');
+        const quizSubtitleEl = document.getElementById('quizSubtitle');
+        const questionTextEl = document.getElementById('questionText');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+        const feedbackTextEl = document.getElementById('feedbackText');
+        const nextButtonEl = document.getElementById('nextButton');
+        const quizAreaEl = document.getElementById('quizArea');
+        const resultAreaEl = document.getElementById('resultArea');
+        const resultTitleEl = document.getElementById('resultTitle');
+        const finalScoreTextEl = document.getElementById('finalScoreText');
+        const finalMessageEl = document.getElementById('finalMessage');
+        const restartButtonEl = document.getElementById('restartButton');
+        const langGuButton = document.getElementById('langGu');
+        const langEnButton = document.getElementById('langEn');
+        const progressBarEl = document.getElementById('progressBar');
+        // For dynamic text on feedback buttons
+        const correctTextId = 'correctText';
+        const incorrectTextId = 'incorrectText';
+
+
+        // --- Questions Data ---
+        // Structure: { id, type ('chapter'/'practical'), gu: {q, o, a}, en: {q, o, a} }
+        const allQuestions = [
+            // Chapter Questions (1-15)
+            { id: 1, type: 'chapter', gu: { q: "સંયમ બસની રાહ જોતી વખતે શું કરતો હતો?", o: ["ફોન પર ગેમ રમતો હતો", "વાર્તાની ચોપડી વાંચતો હતો", "નવકાર મંત્રનું ધ્યાન કરતો હતો", "મિત્રો સાથે વાતો કરતો હતો"], a: 2 }, en: { q: "What was Sanyam doing while waiting for the bus?", o: ["Playing games on the phone", "Reading a story book", "Meditating on the Navkar Mantra", "Talking with friends"], a: 2 } },
+            { id: 2, type: 'chapter', gu: { q: "નવકાર મંત્રનું ધ્યાન કેવી રીતે કરવાનું હોય છે?", o: ["આંખો ખુલ્લી રાખીને", "ઝડપથી મંત્ર બોલીને", "હૃદયમાં કમળની કલ્પના કરીને અને તેના ભાગોમાં પદ સ્થાપીને", "ફક્ત મંત્ર સાંભળીને"], a: 2 }, en: { q: "How is the Navkar Mantra meditation supposed to be done?", o: ["With eyes open", "By chanting the mantra quickly", "By imagining a lotus in the heart and placing the 'pads' in its parts", "Only by listening to the mantra"], a: 2 } },
+            { id: 3, type: 'chapter', gu: { q: "સંયમના મતે, સામાન્ય રીતે લોકો ફોનમાં શા માટે જુએ છે?", o: ["જ્ઞાન મેળવવા", "ટાઈમ પાસ અને ફન માટે", "જરૂરી કામ કરવા", "સમાચાર જાણવા"], a: 1 }, en: { q: "According to Sanyam, why do people generally look at their phones?", o: ["To gain knowledge", "For time pass and fun", "To do important work", "To know the news"], a: 1 } },
+            { id: 4, type: 'chapter', gu: { q: "નવકાર મંત્રના ધ્યાનના કયા ફાયદા સંયમે ગણાવ્યા?", o: ["ફક્ત મનની શાંતિ", "ફક્ત શારીરિક આરોગ્ય", "ટાઈમ પાસ, ફન, આત્મિક લાભ, મનની શાંતિ, શારીરિક આરોગ્ય", "ફક્ત આત્મિક લાભ"], a: 2 }, en: { q: "What benefits of Navkar Mantra meditation did Sanyam mention?", o: ["Only peace of mind", "Only physical health", "Time pass, fun, spiritual benefit, peace of mind, physical health", "Only spiritual benefit"], a: 2 } },
+            { id: 5, type: 'chapter', gu: { q: "સંયમના મતે, ફોનમાં બિનજરૂરી વસ્તુઓ જોવી એ શું છે?", o: ["સમયનો સદુપયોગ", "જ્ઞાનવર્ધક પ્રવૃત્તિ", "મૂર્ખામી અને સમયનો બગાડ", "આધુનિક જીવનશૈલીનો ભાગ"], a: 2 }, en: { q: "According to Sanyam, what is watching unnecessary things on the phone?", o: ["Good use of time", "Knowledge-enhancing activity", "Foolishness and waste of time", "Part of modern lifestyle"], a: 2 } },
+            { id: 6, type: 'chapter', gu: { q: "યુગના મતે સંયમનું વર્તન અને દ્રષ્ટિ કેવા હતા?", o: ["સામાન્ય અને સામાન્ય", "વિચિત્ર અને અસ્પષ્ટ", "ખાસ અને દિવ્ય", "સ્વાર્થી અને ઘમંડી"], a: 2 }, en: { q: "According to Yug, how were Sanyam's behavior and vision?", o: ["Ordinary and common", "Strange and unclear", "Special and divine", "Selfish and arrogant"], a: 2 } },
+            { id: 7, type: 'chapter', gu: { q: "સંયમના મતે, તેના ખાસ વર્તનનું રહસ્ય શું છે?", o: ["તેનું નસીબ", "તેના માતાપિતાના સંસ્કાર", "વિવેકનો ઉપયોગ", "તેની બુદ્ધિ"], a: 2 }, en: { q: "According to Sanyam, what is the secret of his special behavior?", o: ["His luck", "His parents' upbringing", "The use of 'Vivek' (discretion)", "His intelligence"], a: 2 } },
+            { id: 8, type: 'chapter', gu: { q: "'વિવેક' કોણ છે, સંયમના વર્ણન મુજબ?", o: ["સંયમનો શાળાનો મિત્ર", "એક પ્રખ્યાત ફિલોસોફર", "દરેક વ્યક્તિનો આંતરિક મિત્ર", "એક કાલ્પનિક પાત્ર"], a: 2 }, en: { q: "Who is 'Vivek', according to Sanyam's description?", o: ["Sanyam's school friend", "A famous philosopher", "Everyone's inner friend", "A fictional character"], a: 2 } },
+            { id: 9, type: 'chapter', gu: { q: "'વિવેક' શબ્દ કયા સંસ્કૃત ધાતુ પરથી બન્યો છે?", o: ["વિદ્ (જાણવું)", "વિચ્ (છુટ્ટું પાડવું)", "વિજ્ (જીતવું)", "વૃત્ (હોવું)"], a: 1 }, en: { q: "From which Sanskrit root word is 'Vivek' derived?", o: ["Vid (to know)", "Vich (to separate)", "Vij (to win)", "Vrut (to be)"], a: 1 } },
+            { id: 10, type: 'chapter', gu: { q: "વિવેકનો અર્થ શું છે?", o: ["બધું ભેગું કરવું", "વિશેષ રૂપે છૂટું પાડવું અને યોગ્ય પસંદ કરવું", "આંધળો વિશ્વાસ કરવો", "ઝડપી નિર્ણય લેવો"], a: 1 }, en: { q: "What is the meaning of 'Vivek'?", o: ["To mix everything together", "To separate with discernment and choose appropriately", "To believe blindly", "To make quick decisions"], a: 1 } },
+            { id: 11, type: 'chapter', gu: { q: "સંયમના મતે, માણસ અને જાનવર વચ્ચે મુખ્ય તફાવત શું છે?", o: ["પૂંછડી અને શિંગડા", "બોલવાની ક્ષમતા", "વિવેક", "રહેઠાણ"], a: 2 }, en: { q: "According to Sanyam, what is the main difference between humans and animals?", o: ["Tail and horns", "Ability to speak", "Vivek (discretion)", "Habitat"], a: 2 } },
+            { id: 12, type: 'chapter', gu: { q: "રસ્તા પર ખરાબ પોસ્ટર જોવાથી શું નુકસાન થઈ શકે છે?", o: ["આંખોને આરામ મળે", "મનોરંજન થાય", "મન અશુદ્ધ થાય અને સમય બગડે", "કલાની કદર વધે"], a: 2 }, en: { q: "What harm can come from looking at inappropriate posters on the street?", o: ["It rests the eyes", "It provides entertainment", "The mind becomes impure and time is wasted", "Appreciation for art increases"], a: 2 } },
+            { id: 13, type: 'chapter', gu: { q: "તમાકુના પેકેટ પર સામાન્ય રીતે કઈ ચેતવણી હોય છે?", o: ["'સ્વાસ્થ્ય માટે લાભકારી'", "'તમાકુ મારે છે' (Tobacco Kills)", "'ઓછી માત્રામાં લો'", "'ફક્ત પુખ્ત વયના લોકો માટે'"], a: 1 }, en: { q: "What warning is usually found on a tobacco packet?", o: ["'Beneficial for health'", "'Tobacco Kills'", "'Consume in moderation'", "'For adults only'"], a: 1 } },
+            { id: 14, type: 'chapter', gu: { q: "સંયમના મતે, નીચેનામાંથી કઈ વસ્તુ તમાકુ જેવી નુકસાનકારક નથી?", o: ["બહારનું બિનઆરોગ્યપ્રદ ખાવાનું", "ખરાબ ફિલ્મો અને સંદેશા", "ક્રોધ અને અહંકાર", "નિયમિત કસરત"], a: 3 }, en: { q: "According to Sanyam, which of the following is NOT harmful like tobacco?", o: ["Unhealthy outside food", "Bad movies and messages", "Anger and ego", "Regular exercise"], a: 3 } },
+            { id: 15, type: 'chapter', gu: { q: "જો સરકાર 'વિવેક'નું શિક્ષણ આપે તો દેશને શું ફાયદો થાય, સંયમના મતે?", o: ["લોકો વધુ પૈસા કમાય", "દેશનો ઉદ્ધાર થાય અને સામાજિક સમસ્યાઓ ઘટે", "વધુ શાળાઓ બને", "વિદેશી રોકાણ વધે"], a: 1 }, en: { q: "According to Sanyam, what benefit would the country get if the government provided 'Vivek' education?", o: ["People would earn more money", "The country would be uplifted and social problems would reduce", "More schools would be built", "Foreign investment would increase"], a: 1 } },
+            
+            // Practical Questions (16-30)
+            { id: 16, type: 'practical', gu: { q: "તમારા મિત્રો તમને મોડી રાત્રે પાર્ટીમાં જવા દબાણ કરે છે, પણ બીજે દિવસે મહત્વની પરીક્ષા છે. 'વિવેક' શું સૂચવે છે?", o: ["પાર્ટીમાં જવું, પરીક્ષા પછી જોઈ લેવાશે", "પરીક્ષાની તૈયારી કરવી અને પાર્ટી ન જવું", "થોડો સમય પાર્ટીમાં જઈને વહેલા પાછા આવવું", "મિત્રોને નારાજ ન કરવા માટે જવું"], a: 1 }, en: { q: "Your friends pressure you to go to a late-night party, but you have an important exam the next day. What does 'Vivek' suggest?", o: ["Go to the party, deal with the exam later", "Prepare for the exam and skip the party", "Go to the party for a short while and return early", "Go to avoid upsetting friends"], a: 1 } },
+            { id: 17, type: 'practical', gu: { q: "સોશિયલ મીડિયા પર કોઈ અજાણી વ્યક્તિ અપમાનજનક ટિપ્પણી કરે તો 'વિવેક' તમને શું કરવા કહેશે?", o: ["તેને તેવી જ ભાષામાં જવાબ આપવો", "તેને અવગણવું અને બ્લોક કરવું", "તેની પ્રોફાઈલ પર જઈને તેને હેરાન કરવું", "મિત્રોને કહીને તેની સામે ફરિયાદ કરવી"], a: 1 }, en: { q: "If a stranger makes an offensive comment on social media, what would 'Vivek' advise you to do?", o: ["Reply in the same offensive language", "Ignore and block them", "Go to their profile and harass them", "Tell friends and complain against them"], a: 1 } },
+            { id: 18, type: 'practical', gu: { q: "રસ્તા પર પૈસા ભરેલું પાકીટ મળે તો 'વિવેક' મુજબ શું કરવું જોઈએ?", o: ["પૈસા પોતાની પાસે રાખી લેવા", "નજીકના પોલીસ સ્ટેશનમાં જમા કરાવવું", "થોડા પૈસા કાઢીને બાકીનું દાન કરી દેવું", "કોઈને ખબર ન પડે તેમ ત્યાંજ મૂકી દેવું"], a: 1 }, en: { q: "If you find a wallet full of money on the street, what should you do according to 'Vivek'?", o: ["Keep the money for yourself", "Deposit it at the nearest police station", "Take some money and donate the rest", "Leave it there without anyone noticing"], a: 1 } },
+            { id: 19, type: 'practical', gu: { q: "તમારો નાનો ભાઈ હોમવર્ક કરવાને બદલે સતત ગેમ્સ રમે છે. 'વિવેક' વાપરીને તમે શું કરશો?", o: ["તેના પર ગુસ્સે થવું અને ગેમ બંધ કરાવી દેવી", "તેને પ્રેમથી સમજાવવું કે ભણતરનું શું મહત્વ છે", "તેના માતાપિતાને ફરિયાદ કરવી", "તેને ગેમ રમવા દેવી કારણ કે તે ખુશ રહે છે"], a: 1 }, en: { q: "Your younger sibling constantly plays games instead of doing homework. Using 'Vivek', what would you do?", o: ["Get angry and stop the game", "Lovingly explain the importance of studies", "Complain to their parents", "Let them play as it makes them happy"], a: 1 } },
+            { id: 20, type: 'practical', gu: { q: "સારી આવકવાળી નોકરી મળે છે પણ તેમાં અનૈતિક કામ કરવું પડે તેમ છે. 'વિવેક' શું નિર્ણય લેવા કહેશે?", o: ["નોકરી સ્વીકારી લેવી કારણ કે પૈસા મહત્વના છે", "અનૈતિક હોવાથી નોકરી ન સ્વીકારવી", "થોડો સમય નોકરી કરીને પછી છોડી દેવી", "બીજાને પૂછ્યા વગર નિર્ણય લેવો"], a: 1 }, en: { q: "You get a high-paying job offer that involves unethical work. What decision would 'Vivek' suggest?", o: ["Accept the job as money is important", "Do not accept the job as it is unethical", "Work for some time and then quit", "Make a decision without asking anyone"], a: 1 } },
+            { id: 21, type: 'practical', gu: { q: "તમારો મિત્ર બીજા મિત્ર વિશે ખરાબ વાતો કરે છે. 'વિવેક' તમને શું કરવા પ્રેરશે?", o: ["તેની વાતમાં જોડાઈ જવું", "તેને અટકાવીને કહેવું કે આમ ન કરવું જોઈએ", "વાત સાંભળીને બીજાને કહેવી", "ત્યાંથી ચૂપચાપ ચાલ્યા જવું"], a: 1 }, en: { q: "Your friend is speaking ill of another friend. What will 'Vivek' inspire you to do?", o: ["Join in the conversation", "Stop them and say this shouldn't be done", "Listen and tell others", "Quietly walk away"], a: 1 } },
+            { id: 22, type: 'practical', gu: { q: "ઓનલાઈન ખરીદીમાં કોઈ પ્રોડક્ટ પર અવિશ્વસનીય ડિસ્કાઉન્ટ છે, પણ વેચનાર અજાણ્યો છે. 'વિવેક' શું સૂચવે છે?", o: ["તરત ખરીદી લેવું, ઓફર જતી રહેશે", "વેચનારની વિશ્વસનીયતા તપાસ્યા પછી જ નિર્ણય લેવો", "મિત્રોને પણ ખરીદવા કહેવું", "ડિસ્કાઉન્ટ ઓછું કરવા ભાવતાલ કરવો"], a: 1 }, en: { q: "An online product has an unbelievable discount, but the seller is unknown. What does 'Vivek' suggest?", o: ["Buy immediately, the offer might go", "Decide only after checking the seller's credibility", "Tell friends to buy it too", "Bargain to reduce the discount"], a: 1 } },
+            { id: 23, type: 'practical', gu: { q: "રેસ્ટોરન્ટમાં વેઈટર ભૂલથી બિલમાં ઓછી રકમ લખે છે. 'વિવેક' શું કરવા કહેશે?", o: ["ચૂપચાપ ઓછા પૈસા ચૂકવી દેવા", "વેઈટરનું ધ્યાન દોરીને ભૂલ સુધારાવવી", "દોસ્તોને આ વાતની જાણ કરવી અને મજા લેવી", "ટીપમાં પૈસા કાપી લેવા"], a: 1 }, en: { q: "A waiter mistakenly writes a lower amount on the bill in a restaurant. What would 'Vivek' tell you to do?", o: ["Quietly pay the lesser amount", "Point out the mistake to the waiter and get it corrected", "Inform friends about it and have fun", "Deduct money from the tip"], a: 1 } },
+            { id: 24, type: 'practical', gu: { q: "પાડોશી મોડી રાત્રે ઘોંઘાટ કરે છે. 'વિવેક' મુજબ આ પરિસ્થિતિને કેવી રીતે સંભાળશો?", o: ["તેમની સાથે ઝઘડો કરવો", "પોલીસને ફોન કરવો", "નમ્રતાપૂર્વક તેમને વિનંતી કરવી કે અવાજ ધીમો રાખે", "કાનમાં રૂ નાખીને સૂઈ જવું"], a: 2 }, en: { q: "Your neighbor makes loud noises late at night. According to 'Vivek', how would you handle this situation?", o: ["Quarrel with them", "Call the police", "Politely request them to keep the noise down", "Put cotton in your ears and sleep"], a: 2 } },
+            { id: 25, type: 'practical', gu: { q: "કોઈ યોજનામાં રોકાણ કરવાથી ઓછા સમયમાં પૈસા બમણા થવાનું વચન મળે છે. 'વિવેક' શું ચેતવણી આપશે?", o: ["તરત રોકાણ કરી દેવું", "આવી યોજનાઓ સામાન્ય રીતે છેતરપિંડી હોય શકે છે, સાવચેત રહેવું", "વધુ લોકોને આ યોજનામાં જોડવા", "ઘરના દાગીના વેચીને પણ રોકાણ કરવું"], a: 1 }, en: { q: "An investment scheme promises to double your money in a short time. What warning would 'Vivek' give?", o: ["Invest immediately", "Such schemes can often be fraudulent, be cautious", "Get more people to join this scheme", "Invest even by selling household jewelry"], a: 1 } },
+            { id: 26, type: 'practical', gu: { q: "તમે કોઈ કાર્યમાં નિષ્ફળ થાઓ છો. 'વિવેક' તમને આ પરિસ્થિતિનો સામનો કેવી રીતે કરવા માર્ગદર્શન આપશે?", o: ["હતાશ થઈને પ્રયાસ છોડી દેવો", "નિષ્ફળતાના કારણો શોધી, તેમાંથી શીખીને ફરી પ્રયાસ કરવો", "બીજાને દોષ આપવો", "તે કાર્યને હંમેશા માટે ભૂલી જવું"], a: 1 }, en: { q: "You fail at a task. How will 'Vivek' guide you to face this situation?", o: ["Get discouraged and give up", "Find the reasons for failure, learn from them, and try again", "Blame others", "Forget that task forever"], a: 1 } },
+            { id: 27, type: 'practical', gu: { q: "કોઈ મદદ માંગે છે, પણ તમને લાગે છે કે તેઓ તમારી દયાનો દુરુપયોગ કરી રહ્યા છે. 'વિવેક' શું સંતુલન જાળવવા કહેશે?", o: ["આંખ બંધ કરીને મદદ કરવી", "મદદ કરવાની સ્પષ્ટ ના પાડી દેવી", "પરિસ્થિતિનું મૂલ્યાંકન કરી, ખરેખર જરૂર હોય તો જ યોગ્ય મદદ કરવી", "તેમને પૈસા આપી દેવા"], a: 2 }, en: { q: "Someone asks for help, but you feel they might be misusing your kindness. How will 'Vivek' advise you to maintain balance?", o: ["Help blindly", "Clearly refuse to help", "Evaluate the situation and provide appropriate help only if genuinely needed", "Give them money"], a: 2 } },
+            { id: 28, type: 'practical', gu: { q: "કોઈએ તમારી સાથે અન્યાય કર્યો હોવાથી તમને ગુસ્સો આવે છે. 'વિવેક' કેવી પ્રતિક્રિયા આપવા માર્ગદર્શન આપશે?", o: ["તરત જ બદલો લેવો", "શાંતિથી વિચારવું અને યોગ્ય રીતે પોતાની વાત રજૂ કરવી", "ગુસ્સામાં અપશબ્દો બોલવા", "તે વ્યક્તિ સાથે સંબંધ તોડી નાખવો"], a: 1 }, en: { q: "You are angry because someone treated you unfairly. How will 'Vivek' guide your reaction?", o: ["Take revenge immediately", "Think calmly and present your point appropriately", "Use abusive words in anger", "Break ties with that person"], a: 1 } },
+            { id: 29, type: 'practical', gu: { q: "તમે નવી વસ્તુ શીખવા માંગો છો, પણ નિષ્ફળ થવાનો ડર છે. 'વિવેક' કેવી રીતે પ્રોત્સાહિત કરશે?", o: ["ડરને કારણે પ્રયાસ ન કરવો", "નાના પગલાથી શરૂઆત કરવી અને પ્રયાસ ચાલુ રાખવો, ભૂલોમાંથી શીખવું", "જે આવડે છે તે જ કરવું", "બીજા કોઈને તમારા વતી શીખવા કહેવું"], a: 1 }, en: { q: "You want to learn something new but fear failure. How will 'Vivek' encourage you?", o: ["Don't try because of fear", "Start with small steps, keep trying, and learn from mistakes", "Only do what you already know", "Ask someone else to learn it for you"], a: 1 } },
+            { id: 30, type: 'practical', gu: { q: "તમે કોઈને જાહેર સ્થળે કચરો ફેંકતા જુઓ છો. 'વિવેક' શું કરવા પ્રોત્સાહિત કરશે?", o: ["તેમની અવગણના કરવી", "તેમની સાથે ઝઘડો કરવો", "નમ્રતાપૂર્વક તેમને કચરાપેટીનો ઉપયોગ કરવા વિનંતી કરવી", "પોતે પણ ત્યાં કચરો ફેંકવો"], a: 2 }, en: { q: "You see someone littering in a public place. What will 'Vivek' encourage you to do?", o: ["Ignore them", "Quarrel with them", "Politely request them to use a dustbin", "Also litter there yourself"], a: 2 } }
+        ];
+
+        // --- Functions ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestions() {
+            // Shuffle questions for variety each time
+            questions = [...allQuestions]; // Create a copy to not mutate original
+            shuffleArray(questions);
+            userAnswers = new Array(questions.length).fill(null);
+        }
+
+        function displayQuestion() {
+            answerChecked = false; // Reset for the new question
+            if (currentQuestionIndex < questions.length) {
+                const currentQData = questions[currentQuestionIndex];
+                const qLangData = currentQData[currentLanguage];
+
+                questionTextEl.textContent = `(${currentQuestionIndex + 1}/${questions.length}) ${qLangData.q}`;
+                optionsContainerEl.innerHTML = '';
+                feedbackTextEl.textContent = '';
+                feedbackTextEl.className = 'feedback-text'; // Reset feedback class
+
+                qLangData.o.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-button');
+                    button.textContent = option;
+                    button.onclick = () => selectOption(index, button);
+                    optionsContainerEl.appendChild(button);
+                });
+                
+                nextButtonEl.disabled = true; // Disabled until an option is selected
+                updateProgressBar();
+                setButtonText(nextButtonEl, currentLanguage === 'gu' ? 'આગળ' : 'Next');
+                if (currentQuestionIndex === questions.length -1) {
+                     setButtonText(nextButtonEl, currentLanguage === 'gu' ? 'સબમિટ કરો' : 'Submit');
+                }
+
+            } else {
+                showResult();
+            }
+        }
+        
+        function selectOption(index, buttonEl) {
+            if (answerChecked) return; // Don't allow changing answer after check
+
+            // Clear previous selection
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-button');
+            optionButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Mark new selection
+            buttonEl.classList.add('selected');
+            userAnswers[currentQuestionIndex] = index;
+            nextButtonEl.disabled = false;
+        }
+
+        function handleNext() {
+            if (userAnswers[currentQuestionIndex] === null) return; // No option selected
+
+            if (!answerChecked) { // First click on "Next" for this question: Check answer
+                checkAnswer();
+                answerChecked = true;
+                 setButtonText(nextButtonEl, currentLanguage === 'gu' ? 'આગળનો પ્રશ્ન' : 'Next Question');
+                 if (currentQuestionIndex === questions.length - 1) {
+                    setButtonText(nextButtonEl, currentLanguage === 'gu' ? 'પરિણામ જુઓ' : 'Show Result');
+                }
+            } else { // Second click: Move to next question or show results
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResult();
+                }
+            }
+        }
+
+
+        function checkAnswer() {
+            const selectedOptionIndex = userAnswers[currentQuestionIndex];
+            const correctOptionIndex = questions[currentQuestionIndex][currentLanguage].a;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-button');
+
+            optionButtons.forEach((btn, idx) => {
+                btn.disabled = true; // Disable options after checking
+                if (idx === correctOptionIndex) {
+                    btn.classList.add('correct');
+                }
+            });
+            
+            if (selectedOptionIndex === correctOptionIndex) {
+                score++;
+                feedbackTextEl.textContent = currentLanguage === 'gu' ? 'સાચો જવાબ!' : 'Correct!';
+                feedbackTextEl.className = 'feedback-text text-green-600';
+                if (optionButtons[selectedOptionIndex]) {
+                     optionButtons[selectedOptionIndex].classList.add('correct'); // Already handled if it's the correct one
+                }
+            } else {
+                feedbackTextEl.textContent = currentLanguage === 'gu' ? 'ખોટો જવાબ.' : 'Incorrect.';
+                feedbackTextEl.className = 'feedback-text text-red-600';
+                if (optionButtons[selectedOptionIndex]) {
+                    optionButtons[selectedOptionIndex].classList.add('incorrect');
+                }
+            }
+        }
+
+        function showResult() {
+            quizAreaEl.classList.add('hidden');
+            resultAreaEl.classList.remove('hidden');
+
+            const percentage = (score / questions.length) * 100;
+            let message = '';
+
+            if (currentLanguage === 'gu') {
+                resultTitleEl.textContent = 'પરિણામ';
+                finalScoreTextEl.textContent = `તમારો સ્કોર: ${score} માંથી ${questions.length}`;
+                if (percentage >= 80) message = "ખૂબ સરસ! તમારી વિવેકની સમજ ઉત્તમ છે.";
+                else if (percentage >= 60) message = "સારું પ્રદર્શન! તમે વિવેકને સારી રીતે સમજી રહ્યા છો.";
+                else if (percentage >= 40) message = "ઠીક છે. થોડો વધુ અભ્યાસ કરવાથી ફાયદો થશે.";
+                else message = "વધુ મહેનતની જરૂર છે. પ્રકરણ ફરીથી વાંચો અને વિચારો.";
+                restartButtonEl.textContent = 'ફરીથી શરૂ કરો';
+            } else {
+                resultTitleEl.textContent = 'Result';
+                finalScoreTextEl.textContent = `Your Score: ${score} out of ${questions.length}`;
+                if (percentage >= 80) message = "Excellent! Your understanding of discretion is superb.";
+                else if (percentage >= 60) message = "Good job! You have a good grasp of discretion.";
+                else if (percentage >= 40) message = "Fair. A little more study will be beneficial.";
+                else message = "Needs more effort. Reread the chapter and reflect.";
+                restartButtonEl.textContent = 'Restart Quiz';
+            }
+            finalMessageEl.textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            answerChecked = false;
+            loadQuestions(); // Reshuffle
+            
+            resultAreaEl.classList.add('hidden');
+            quizAreaEl.classList.remove('hidden');
+            
+            updateUILanguage(); // Ensure UI text is correct for current language
+            displayQuestion();
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            document.documentElement.lang = lang; // Set HTML lang attribute
+
+            if (lang === 'gu') {
+                langGuButton.classList.add('active');
+                langEnButton.classList.remove('active');
+            } else {
+                langEnButton.classList.add('active');
+                langGuButton.classList.remove('active');
+            }
+            // Restart quiz to apply language change fully
+            restartQuiz(); 
+        }
+        
+        function updateProgressBar() {
+            const progressPercentage = ((currentQuestionIndex) / questions.length) * 100;
+            progressBarEl.style.width = `${progressPercentage}%`;
+        }
+
+        function setButtonText(buttonElement, text) {
+            buttonElement.textContent = text;
+        }
+
+        function updateUILanguage() {
+            // Update static text elements based on currentLanguage
+            if (currentLanguage === 'gu') {
+                quizTitleEl.textContent = 'વિવેક : સાચા ખોટા ની પરખ';
+                quizSubtitleEl.textContent = 'તમારી સમજ ચકાસો';
+                // Next button text is handled in displayQuestion
+                // Result area titles are handled in showResult
+                // Restart button text is handled in showResult/restartQuiz
+            } else {
+                quizTitleEl.textContent = 'Vivek: The Discretion Quiz'; // English title remains same or can be changed if needed
+                quizSubtitleEl.textContent = 'Test your understanding';
+            }
+        }
+
+
+        // --- Initial Load ---
+        window.onload = () => {
+            loadQuestions();
+            updateUILanguage(); // Set initial UI text
+            displayQuestion();
+        };
+    </script>
+</body>
+</html>

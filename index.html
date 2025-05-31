@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">વિવેક: જીવનનો સાચો માર્ગ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General body styling */
+        body {
+            font-family: 'Inter', 'Noto Sans Gujarati', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8; /* Light Sky Blue background */
+            color: #333; /* Default text color */
+            line-height: 1.6; /* Improved readability */
+            transition: background-color 0.3s ease; /* Smooth background transition */
+        }
+
+        /* Container for centering content */
+        .container {
+            max-width: 700px; /* Optimal width for readability on larger screens */
+            margin: 0 auto; /* Center the container */
+            padding: 15px; /* Padding on the sides */
+        }
+
+        /* Header styling */
+        header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); /* Blue gradient background */
+            color: white; /* White text color for header */
+            padding: 25px 20px; /* Padding inside the header */
+            text-align: center; /* Center align text */
+            border-bottom-left-radius: 20px; /* Rounded bottom corners */
+            border-bottom-right-radius: 20px;
+            margin-bottom: 25px; /* Space below the header */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+        }
+        header h1 {
+            margin: 0 0 5px 0; /* Margin for the main heading */
+            font-size: 2.2em; /* Larger font size for heading */
+            font-weight: 700; /* Bold font weight */
+        }
+        header p {
+            margin: 0; /* Margin for the subtitle */
+            font-size: 1.1em; /* Font size for subtitle */
+            opacity: 0.9; /* Slightly transparent subtitle */
+        }
+
+        /* Language switcher styling */
+        .lang-switcher {
+            display: flex; /* Use flexbox for layout */
+            justify-content: center; /* Center buttons */
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 25px; /* Space below the switcher */
+        }
+        .lang-btn {
+            padding: 10px 18px; /* Padding inside buttons */
+            border: 1px solid #2563eb; /* Blue border */
+            background-color: white; /* White background for inactive button */
+            color: #2563eb; /* Blue text color for inactive button */
+            cursor: pointer; /* Pointer cursor on hover */
+            border-radius: 8px; /* Rounded corners for buttons */
+            font-weight: 500; /* Medium font weight */
+            transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; /* Smooth transitions */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
+        }
+        .lang-btn.active {
+            background-color: #2563eb; /* Blue background for active button */
+            color: white; /* White text for active button */
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4); /* More pronounced shadow for active button */
+        }
+        .lang-btn:not(.active):hover {
+            background-color: #eff6ff; /* Lighter blue background on hover for inactive button */
+        }
+
+        /* Card grid for links */
+        .card-grid {
+            display: grid; /* Use grid layout */
+            grid-template-columns: 1fr; /* Single column layout for mobile-first approach */
+            gap: 20px; /* Space between cards */
+        }
+
+        /* Individual card styling */
+        .card {
+            background-color: white; /* White background for cards */
+            border-radius: 12px; /* Rounded corners for cards */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08); /* Soft shadow for cards */
+            padding: 20px; /* Padding inside cards */
+            display: flex; /* Use flexbox for card content layout */
+            flex-direction: column; /* Stack card content vertically */
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth hover effects */
+        }
+        .card:hover {
+            transform: translateY(-3px); /* Slight lift effect on hover */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* Enhanced shadow on hover */
+        }
+        .card h3 {
+            font-size: 1.4em; /* Font size for card titles */
+            color: #1e3a8a; /* Darker blue for card titles */
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 10px; /* Space below title */
+            font-weight: 600; /* Semi-bold font weight for titles */
+        }
+        .card p {
+            font-size: 0.95em; /* Font size for card descriptions */
+            color: #4b5563; /* Gray color for descriptions */
+            flex-grow: 1; /* Allow description to take available space */
+            margin-bottom: 18px; /* Space below description before button */
+        }
+
+        /* Card button styling */
+        .card-btn {
+            display: inline-block; /* Make button an inline block */
+            background-color: #10b981; /* Default green accent color for buttons */
+            color: white; /* White text for buttons */
+            padding: 12px 18px; /* Padding inside buttons */
+            text-decoration: none; /* Remove underline from links */
+            border-radius: 8px; /* Rounded corners for buttons */
+            text-align: center; /* Center text in buttons */
+            font-weight: 500; /* Medium font weight for button text */
+            transition: background-color 0.2s ease; /* Smooth background transition on hover */
+            align-self: flex-start; /* Align button to the start of the flex container if needed */
+        }
+        .card-btn:hover {
+            background-color: #059669; /* Darker green on hover */
+        }
+        /* Specific button colors for different link types */
+        .card-btn.video { background-color: #ef4444; } /* Red for video links */
+        .card-btn.video:hover { background-color: #dc2626; } /* Darker red on hover */
+        .card-btn.podcast { background-color: #db2777; } /* Pink for podcast links */
+        .card-btn.podcast:hover { background-color: #be185d; } /* Darker pink on hover */
+        .card-btn.other { background-color: #f59e0b; } /* Amber for other links */
+        .card-btn.other:hover { background-color: #d97706; } /* Darker amber on hover */
+
+        /* Footer styling */
+        footer {
+            text-align: center; /* Center align footer text */
+            padding: 25px 15px; /* Padding in footer */
+            margin-top: 35px; /* Space above footer */
+            border-top: 1px solid #dde4e8; /* Light border at the top of footer */
+            color: #555; /* Dark gray text color for footer */
+            font-size: 0.9em; /* Slightly smaller font size for footer */
+        }
+
+        /* Apply Noto Sans Gujarati for elements when lang="gu" */
+        html[lang="gu"] body,
+        html[lang="gu"] header h1,
+        html[lang="gu"] header p,
+        html[lang="gu"] .card h3,
+        html[lang="gu"] .card p,
+        html[lang="gu"] .card-btn,
+        html[lang="gu"] .lang-btn, /* Button text can also be targeted if translated */
+        html[lang="gu"] footer {
+            font-family: 'Noto Sans Gujarati', 'Inter', sans-serif;
+        }
+        /* Default to Inter for English elements when lang="en" */
+        html[lang="en"] body,
+        html[lang="en"] header h1,
+        html[lang="en"] header p,
+        html[lang="en"] .card h3,
+        html[lang="en"] .card p,
+        html[lang="en"] .card-btn,
+        html[lang="en"] .lang-btn,
+        html[lang="en"] footer {
+            font-family: 'Inter', 'Noto Sans Gujarati', sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="mainHeading">વિવેક: સાચો માર્ગ</h1>
+        <p id="mainSubtitle">જીવનના દરેક પગલે યોગ્ય નિર્ણય લેવા માટે માર્ગદર્શન.</p>
+    </header>
+
+    <div class="container">
+        <div class="lang-switcher">
+            <button id="langGuBtn" class="lang-btn active">ગુજરાતી</button>
+            <button id="langEnBtn" class="lang-btn">English</button>
+        </div>
+
+        <main class="card-grid">
+            <div class="card">
+                <div>
+                    <h3 id="link1Title">વિવેક – A Life-Changing Inner Voice | Gujarati Moral Short Film</h3>
+                    <p id="link1Desc">આ શોર્ટ ફિલ્મ વિવેકના મહત્વને સુંદર રીતે રજૂ કરે છે.</p>
+                </div>
+                <a id="link1Anchor" href="https://youtu.be/0_4o-CbcOVw" target="_blank" class="card-btn video">વિડિયો જુઓ</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3 id="link2Title">પોડકાસ્ટ : જીવનમાં વિવેક નું મહત્વ (A Practical Guide)</h3>
+                    <p id="link2Desc">જીવનમાં વિવેકનું શું મહત્વ છે તે સમજાવતો માર્ગદર્શક પોડકાસ્ટ.</p>
+                </div>
+                <a id="link2Anchor" href="https://youtu.be/zG-SjkYJnag" target="_blank" class="card-btn podcast">પોડકાસ્ટ સાંભળો</a>
+            </div>
+            
+            <div class="card">
+                <div>
+                    <h3 id="link6Title">ઓનલાઈન પૈસાનો ચક્કર 💸 કે 'વિવેક'નો સાચો રસ્તો 🤔</h3>
+                    <p id="link6Desc">શું ઓનલાઈન પૈસા કમાવવાની લાલચ આપણને વિવેકથી દૂર લઈ જઈ રહી છે? આ વિડિયોમાં તેના પર વિચાર કરીએ.</p>
+                </div>
+                <a id="link6Anchor" href="https://youtu.be/OsHs8sjf8Ag" target="_blank" class="card-btn video">વિડિયો જુઓ</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3 id="link8Title">વિવેક: સાચો માર્ગદર્શક : A visual representation</h3>
+                    <p id="link8Desc">તમારા આંતરિક અવાજને ઓળખો અને જીવનને ઉન્નત બનાવો.</p>
+                </div>
+                <a id="link8Anchor" href="infographics.html" target="_blank" class="card-btn">જુઓ</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3 id="link9Title">ક્વિઝ : વિવેક : સાચા ખોટા ની પરખ</h3>
+                    <p id="link9Desc">તમારી સમજ ચકાસો અને વિવેક વિશે વધુ શીખો.</p>
+                </div>
+                <a id="link9Anchor" href="quiz.html" target="_blank" class="card-btn other">ક્વિઝ રમો</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3 id="link10Title">રમત : વાક્ય ગોઠવણી કસોટી</h3>
+                    <p id="link10Desc">વિવેકપૂર્ણ વાક્યો ગોઠવીને તમારી ભાષા અને તર્ક શક્તિને ચકાસો.</p>
+                </div>
+                <a id="link10Anchor" href="game.html" target="_blank" class="card-btn other">રમત રમો</a>
+            </div>
+            
+            <div class="card">
+                <div>
+                    <h3 id="link7Title">પહેલાની બધી રવિવારની લિંક્સ</h3>
+                    <p id="link7Desc">અગાઉ પ્રકાશિત થયેલી બધી રવિવારની ઉપયોગી લિંક્સ અહીં એક જ જગ્યાએ મેળવો.</p>
+                </div>
+                <a id="link7Anchor" href="https://mvshah027.github.io/old-links/" target="_blank" class="card-btn">જૂની લિંક્સ જુઓ</a>
+            </div>
+
+        </main>
+    </div>
+
+    <footer>
+        <p id="footerText">મનીષ વી. શાહ: વોટ્સએપ: 94299 26447: (વડોદરા)</p>
+    </footer>
+
+    <script>
+        // Object to hold all translatable strings for different languages
+        const translations = {
+            gu: { // Gujarati translations
+                pageTitle: "વિવેક: જીવનનો સાચો માર્ગ",
+                mainHeading: "વિવેક: સાચો માર્ગ",
+                mainSubtitle: "જીવનના દરેક પગલે યોગ્ય નિર્ણય લેવા માટે માર્ગદર્શન.",
+                langGuBtn: "ગુજરાતી",
+                langEnBtn: "English",
+                // Links Translations in new order
+                link1Title: "વિવેક – A Life-Changing Inner Voice | Gujarati Moral Short Film",
+                link1Desc: "આ શોર્ટ ફિલ્મ વિવેકના મહત્વને સુંદર રીતે રજૂ કરે છે.",
+                link1Anchor: "વિડિયો જુઓ",
+                link2Title: "પોડકાસ્ટ : જીવનમાં વિવેક નું મહત્વ (A Practical Guide)",
+                link2Desc: "જીવનમાં વિવેકનું શું મહત્વ છે તે સમજાવતો માર્ગદર્શક પોડકાસ્ટ.",
+                link2Anchor: "પોડકાસ્ટ સાંભળો",
+                link6Title: "ઓનલાઈન પૈસાનો ચક્કર 💸 કે 'વિવેક'નો સાચો રસ્તો 🤔",
+                link6Desc: "શું ઓનલાઈન પૈસા કમાવવાની લાલચ આપણને વિવેકથી દૂર લઈ જઈ રહી છે? આ વિડિયોમાં તેના પર વિચાર કરીએ.",
+                link6Anchor: "વિડિયો જુઓ",
+                link8Title: "વિવેક: સાચો માર્ગદર્શક : A visual representation", 
+                link8Desc: "તમારા આંતરિક અવાજને ઓળખો અને જીવનને ઉન્નત બનાવો.",
+                link8Anchor: "જુઓ",
+                link9Title: "ક્વિઝ : વિવેક : સાચા ખોટા ની પરખ",
+                link9Desc: "તમારી સમજ ચકાસો અને વિવેક વિશે વધુ શીખો.",
+                link9Anchor: "ક્વિઝ રમો",
+                link10Title: "રમત : વાક્ય ગોઠવણી કસોટી",
+                link10Desc: "વિવેકપૂર્ણ વાક્યો ગોઠવીને તમારી ભાષા અને તર્ક શક્તિને ચકાસો.",
+                link10Anchor: "રમત રમો",
+                link7Title: "પહેલાની બધી રવિવારની લિંક્સ",
+                link7Desc: "અગાઉ પ્રકાશિત થયેલી બધી રવિવારની ઉપયોગી લિંક્સ અહીં એક જ જગ્યાએ મેળવો.",
+                link7Anchor: "જૂની લિંક્સ જુઓ",
+                footerText: "મનીષ વી. શાહ: વોટ્સએપ: 94299 26447: (વડોદરા)"
+            },
+            en: { // English translations
+                pageTitle: "Vivek: The True Path of Life",
+                mainHeading: "Vivek: The True Path",
+                mainSubtitle: "Guidance for making the right decisions at every step of life.",
+                langGuBtn: "ગુજરાતી",
+                langEnBtn: "English",
+                // Links Translations in new order
+                link1Title: "Vivek – A Life-Changing Inner Voice | Gujarati Moral Short Film",
+                link1Desc: "This short film beautifully presents the importance of discretion (Vivek).",
+                link1Anchor: "Watch Video",
+                link2Title: "Podcast: Importance of Vivek in Life (A Practical Guide)",
+                link2Desc: "A guiding podcast explaining the importance of discretion in life.",
+                link2Anchor: "Listen to Podcast",
+                link6Title: "Online Money Maze 💸 or the True Path of 'Vivek' 🤔",
+                link6Desc: "Is the lure of making money online distracting us from the path of discernment (Vivek)? This video explores this.",
+                link6Anchor: "Watch Video",
+                link8Title: "Vivek: The True Guide : A Visual Representation", 
+                link8Desc: "A visual representation to help you recognize your inner voice and elevate your life.",
+                link8Anchor: "View Infographics",
+                link9Title: "Quiz: Vivek: Test of Right and Wrong",
+                link9Desc: "Test your understanding and learn more about discretion (Vivek).",
+                link9Anchor: "Play Quiz",
+                link10Title: "Game: Sentence Arrangement Test",
+                link10Desc: "Test your language and reasoning skills by arranging thoughtful sentences related to Vivek.",
+                link10Anchor: "Play Game",
+                link7Title: "All Previous Sunday Links",
+                link7Desc: "Access all previously published useful Sunday links in one place here.",
+                link7Anchor: "View Old Links",
+                footerText: "Manish V. Shah: WhatsApp: 94299 26447: (Vadodara)"
+            }
+        };
+
+        // Get references to DOM Elements that need to be updated
+        const pageTitleEl = document.getElementById('pageTitle');
+        const mainHeadingEl = document.getElementById('mainHeading');
+        const mainSubtitleEl = document.getElementById('mainSubtitle');
+        const langGuBtnEl = document.getElementById('langGuBtn');
+        const langEnBtnEl = document.getElementById('langEnBtn');
+        const footerTextEl = document.getElementById('footerText');
+
+        // Data structure for mapping translation keys to HTML element IDs for link cards
+        // THIS ARRAY MUST MATCH THE ORDER OF CARDS IN THE HTML
+        const translatableLinksData = [
+            { baseKey: 'link1', titleId: 'link1Title', descId: 'link1Desc', anchorId: 'link1Anchor' },
+            { baseKey: 'link2', titleId: 'link2Title', descId: 'link2Desc', anchorId: 'link2Anchor' },
+            { baseKey: 'link6', titleId: 'link6Title', descId: 'link6Desc', anchorId: 'link6Anchor' }, // Online Money video (Moved to 3rd)
+            { baseKey: 'link8', titleId: 'link8Title', descId: 'link8Desc', anchorId: 'link8Anchor' }, // New Infographics
+            { baseKey: 'link9', titleId: 'link9Title', descId: 'link9Desc', anchorId: 'link9Anchor' }, // New Quiz
+            { baseKey: 'link10', titleId: 'link10Title', descId: 'link10Desc', anchorId: 'link10Anchor' }, // New Game
+            { baseKey: 'link7', titleId: 'link7Title', descId: 'link7Desc', anchorId: 'link7Anchor' }  // Old Links
+        ];
+
+        // Function to set the language of the page
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+
+            pageTitleEl.textContent = translations[lang].pageTitle;
+            mainHeadingEl.textContent = translations[lang].mainHeading;
+            mainSubtitleEl.textContent = translations[lang].mainSubtitle;
+            footerTextEl.textContent = translations[lang].footerText;
+
+            translatableLinksData.forEach(linkData => {
+                const titleEl = document.getElementById(linkData.titleId);
+                const descEl = document.getElementById(linkData.descId);
+                const anchorEl = document.getElementById(linkData.anchorId);
+
+                if (titleEl && translations[lang][`${linkData.baseKey}Title`]) {
+                    titleEl.textContent = translations[lang][`${linkData.baseKey}Title`];
+                }
+                if (descEl && translations[lang][`${linkData.baseKey}Desc`]) {
+                    descEl.textContent = translations[lang][`${linkData.baseKey}Desc`];
+                }
+                if (anchorEl && translations[lang][`${linkData.baseKey}Anchor`]) {
+                    anchorEl.textContent = translations[lang][`${linkData.baseKey}Anchor`];
+                }
+            });
+
+            if (lang === 'gu') {
+                langGuBtnEl.classList.add('active');
+                langEnBtnEl.classList.remove('active');
+            } else {
+                langEnBtnEl.classList.add('active');
+                langGuBtnEl.classList.remove('active');
+            }
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        langGuBtnEl.addEventListener('click', () => setLanguage('gu'));
+        langEnBtnEl.addEventListener('click', () => setLanguage('en'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const preferredLanguage = localStorage.getItem('preferredLanguage') || 'gu';
+            setLanguage(preferredLanguage);
+        });
+    </script>
+</body>
+</html>

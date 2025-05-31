@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence Grid Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none; /* Prevents pull-to-refresh on mobile */
+        }
+        .grid-cell {
+            position: relative;
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            font-size: 0.875rem; /* Increased font size for readability (Tailwind text-sm) */
+            overflow: hidden;
+            min-height: 60px; /* Slightly increased min-height */
+        }
+        .grid-cell.prefilled {
+            background-color: #e5e7eb; /* gray-200 */
+            cursor: not-allowed;
+            font-weight: bold;
+        }
+        .grid-cell.user-filled {
+            background-color: #eff6ff; /* blue-50 */
+        }
+        .grid-cell.correct {
+            background-color: #d1fae5; /* green-100 */
+            border-color: #10b981; /* green-500 */
+        }
+        .grid-cell.incorrect {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #ef4444; /* red-500 */
+        }
+        .grid-cell-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem; 
+        }
+        .option-item {
+            border: 1px solid #9ca3af; /* gray-400 */
+            padding: 0.5rem; 
+            margin: 0.25rem; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            background-color: #f9fafb; /* gray-50 */
+            transition: background-color 0.2s;
+            font-size: 0.8rem;
+        }
+        .option-item:hover {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+        .option-item.selected {
+            background-color: #60a5fa; /* blue-400 */
+            color: white;
+            border-color: #3b82f6; /* blue-600 */
+        }
+        .option-item.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #d1d5db; /* gray-300 */
+        }
+        #rules-container ul {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+        }
+        #rules-container ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+        }
+        .modal {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left; /* Changed for hint list */
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .modal-content ul {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+            text-align: left;
+        }
+        .modal-content button { /* Center the close button in modal */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .action-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .action-button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col items-center p-2 sm:p-4">
+
+    <div class="w-full max-w-2xl bg-white shadow-xl rounded-lg p-4 sm:p-6">
+        <div class="flex justify-center space-x-4 mb-4">
+            <button id="lang-en" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">English</button>
+            <button id="lang-gu" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">ગુજરાતી</button>
+        </div>
+
+        <h1 id="game-title" class="text-2xl sm:text-3xl font-bold text-center mb-4"></h1>
+
+        <div id="rules-section" class="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 id="rules-title" class="text-xl font-semibold"></h2>
+                <button id="toggle-rules-btn" class="px-3 py-1 bg-indigo-500 text-white rounded-md text-sm"></button>
+            </div>
+            <div id="rules-content" class="mt-2 text-sm space-y-2">
+                <p id="instructions-title" class="font-semibold"></p>
+                <ol id="instructions-list" class="list-decimal list-inside space-y-1">
+                </ol>
+                <p id="reference-sentences-title" class="font-semibold mt-3"></p>
+                <ul id="reference-sentences-list" class="list-disc list-inside space-y-1 text-xs">
+                </ul>
+            </div>
+        </div>
+        
+        <div id="game-area" class="space-y-4">
+            <div id="timer-display" class="text-center text-lg font-medium">
+                <span id="timer-label"></span><span id="timer-value">0</span> <span id="timer-seconds"></span>
+            </div>
+
+            <div id="grid-container" class="grid grid-cols-4 gap-1 sm:gap-2 mx-auto w-full aspect-square max-w-lg bg-gray-100 p-1 rounded-md">
+            </div>
+
+            <div class="flex justify-center space-x-3 my-3">
+                <button id="undo-last-btn" class="action-button bg-amber-500 hover:bg-amber-600"></button>
+                <button id="clear-all-btn" class="action-button bg-red-500 hover:bg-red-600"></button>
+                <button id="show-hints-btn" class="action-button bg-sky-500 hover:bg-sky-600"></button> </div>
+
+            <div>
+                <h3 id="options-title" class="text-center font-semibold mb-2"></h3>
+                <div id="options-container" class="flex flex-wrap justify-center items-center p-2 bg-gray-100 rounded-md">
+                </div>
+            </div>
+        </div>
+
+        <div id="results-container" class="hidden mt-6 text-center space-y-3 p-4 bg-yellow-50 rounded-md border border-yellow-200">
+            <p id="result-message" class="text-xl font-bold"></p>
+            <p id="time-taken-message" class="text-md"></p>
+            <p id="correct-fills-message" class="text-md"></p> 
+            <p id="incorrect-fills-message" class="text-md"></p> 
+            <div id="correct-answers-display" class="mt-2 space-y-1 text-left">
+                <h4 id="correct-solution-title" class="font-semibold text-center text-lg mb-2"></h4>
+            </div>
+            <button id="play-again-btn" class="mt-4 px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition"></button>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="modal hidden">
+        <div class="modal-content shadow-lg">
+            <h3 id="modal-title-text"></h3> <div id="modal-message-text"></div> <button id="modal-close-btn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME DATA ---
+        const GAME_STRINGS = {
+            en: {
+                title: "Sentence Grid Challenge",
+                rulesTitle: "Game Rules",
+                toggleHide: "Hide Rules",
+                toggleShow: "Show Rules",
+                timerLabel: "Time: ",
+                seconds: "s",
+                correctMessage: "Excellent! All sentences are correct!",
+                incorrectMessage: "Some parts are misplaced. Check the solution below.",
+                playAgainButton: "Play Again",
+                optionsTitle: "Available Parts:",
+                instructionsTitle: "How to Play:",
+                referenceSentencesTitle: "Reference Sentences:",
+                correctSolutionTitle: "Correct Solution:",
+                timeTakenText: "Time taken: ",
+                correctFillsText: "Correct Parts Placed: ", 
+                incorrectFillsText: "Incorrect Parts Placed: ", 
+                undoLastButton: "Undo Last",
+                clearAllButton: "Clear All",
+                showHintsButton: "Show Hints", 
+                hintsModalTitle: "Hints: Target Sentences", 
+                modalGenericError: "An error occurred. Please try again.",
+                modalSelectPartFirst: "Please select a part first.",
+                modalCellNotEmpty: "This cell is not empty. Choose another one.",
+                modalNoMovesToUndo: "No moves to undo.", 
+                modalNothingToClear: "Nothing to clear.", 
+                instructions: [
+                    "A 4x4 grid will be shown.",
+                    "Four sentences are broken into four parts each.",
+                    "For each sentence, one part will be pre-filled in its correct position.",
+                    "You need to fill the remaining 3 parts for each sentence (total 12 cells) using the parts provided below.",
+                    "Click a part from 'Available Parts', then click an empty cell in the grid to place it.",
+                    "If a sentence is completed correctly, it will be highlighted.",
+                    "Use 'Undo Last' to remove the last placed part, or 'Clear All' to remove all your placed parts.",
+                    "Click 'Show Hints' to see the target sentences.",
+                    "The timer starts when you place your first part.",
+                    "Good luck!"
+                ],
+                sentences: [ 
+                    { id: 1, full: "Navkar meditation brings inner joy and peace.", parts: ["Navkar meditation", "brings inner", "joy and", "peace."] },
+                    { id: 2, full: "Every act should be done asking discretion.", parts: ["Every act", "should be done", "asking", "discretion."] },
+                    { id: 3, full: "Discretion is the inner friend of us all.", parts: ["Discretion is the", "inner friend of", "us", "all."] },
+                    { id: 4, full: "Discretion distinguishes right from wrong clearly.", parts: ["Discretion", "distinguishes", "right from", "wrong clearly."] },
+                    { id: 5, full: "The main difference between human-animal is discretion.", parts: ["The main difference", "between human-animal", "is", "discretion."] },
+                    { id: 6, full: "Bad sights spoil mind and reputation.", parts: ["Bad sights", "spoil", "mind and", "reputation."] },
+                    { id: 7, full: "Addiction despite warning is lack of discretion.", parts: ["Addiction despite", "warning is", "lack of", "discretion."] },
+                    { id: 8, full: "Foolishness means complete absence of discretion.", parts: ["Foolishness means", "complete absence", "of", "discretion."] },
+                    { id: 9, full: "Harmful things, anger are like tobacco.", parts: ["Harmful things,", "anger are", "like", "tobacco."] },
+                    { id: 10, full: "Discretion always saves from harmful matters.", parts: ["Discretion always", "saves from", "harmful", "matters."] },
+                    { id: 11, full: "Acting with discretion makes life successful.", parts: ["Acting with", "discretion makes", "life", "successful."] },
+                    { id: 12, full: "Education of discretion truly uplifts the nation.", parts: ["Education of", "discretion truly", "uplifts the", "nation."] },
+                    { id: 13, full: "Discretion is a precious gift from God.", parts: ["Discretion is a", "precious gift", "from", "God."] },
+                    { id: 14, full: "Unnecessary phone use is a waste of time.", parts: ["Unnecessary phone", "use is a", "waste of", "time."] },
+                    { id: 15, full: "Thought, speech, action should be with discretion.", parts: ["Thought, speech,", "action should be", "with", "discretion."] }
+                ],
+            },
+            gu: {
+                title: "વાક્ય ગોઠવણી કસોટી",
+                rulesTitle: "રમતના નિયમો",
+                toggleHide: "નિયમો છુપાવો",
+                toggleShow: "નિયમો બતાવો",
+                timerLabel: "સમય: ",
+                seconds: "સેકન્ડ",
+                correctMessage: "ખૂબ સરસ! બધા વાક્યો સાચા છે!",
+                incorrectMessage: "કેટલાક ભાગ ખોટી જગ્યાએ છે. નીચે સાચો ઉકેલ જુઓ.",
+                playAgainButton: "ફરીથી રમો",
+                optionsTitle: "ઉપલબ્ધ ભાગો:",
+                instructionsTitle: "કેવી રીતે રમવું:",
+                referenceSentencesTitle: "સંદર્ભ વાક્યો:",
+                correctSolutionTitle: "સાચો ઉકેલ:",
+                timeTakenText: "લીધેલો સમય: ",
+                correctFillsText: "સાચા ભરેલા ભાગ: ", 
+                incorrectFillsText: "ખોટા ભરેલા ભાગ: ", 
+                undoLastButton: "છેલ્લો ભરેલો શબ્દ કાઢો", 
+                clearAllButton: "બધા ભરેલા શબ્દો કાઢો", 
+                showHintsButton: "હિન્ટ બતાવો", 
+                hintsModalTitle: "હિન્ટ: લક્ષ્યાંક વાક્યો", 
+                modalGenericError: "એક ભૂલ થઈ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+                modalSelectPartFirst: "કૃપા કરીને પહેલા એક ભાગ પસંદ કરો.",
+                modalCellNotEmpty: "આ ખાનું ખાલી નથી. બીજું પસંદ કરો.",
+                modalNoMovesToUndo: "કોઈ મુવ બાકી નથી.", 
+                modalNothingToClear: "ખાલી કરવા માટે કંઈ નથી.", 
+                instructions: [
+                    "એક ૪x૪ ગ્રીડ બતાવવામાં આવશે.",
+                    "ચાર વાક્યોને ચાર ભાગમાં વહેંચવામાં આવ્યા છે.",
+                    "દરેક વાક્યનો એક ભાગ તેની સાચી જગ્યાએ પહેલેથી ભરેલો હશે.",
+                    "તમારે દરેક વાક્યના બાકીના ૩ ભાગ (કુલ ૧૨ ખાના) નીચે આપેલા ભાગોનો ઉપયોગ કરીને ભરવાના છે.",
+                    " 'ઉપલબ્ધ ભાગો' માંથી એક ભાગ પર ક્લિક કરો, પછી તેને ગ્રીડના ખાલી ખાનામાં મૂકવા માટે તે ખાના પર ક્લિક કરો.",
+                    "જો કોઈ વાક્ય સાચી રીતે પૂર્ણ થશે, તો તે હાઈલાઈટ થશે.",
+                    "'છેલ્લો ભરેલો શબ્દ કાઢો' થી છેલ્લો મુકેલો ભાગ દૂર કરો, અથવા 'બધા ભરેલા શબ્દો કાઢો' થી બધા મુકેલા ભાગ દૂર કરો.",
+                    "'હિન્ટ બતાવો' પર ક્લિક કરીને લક્ષ્યાંક વાક્યો જુઓ.",
+                    "જ્યારે તમે તમારો પહેલો ભાગ મુકશો ત્યારે ટાઈમર શરૂ થશે.",
+                    "શુભકામનાઓ!"
+                ],
+                sentences: [ 
+                    { id: 1, full: "નવકાર ધ્યાનથી આંતરિક આનંદ, શાંતિ મળે.", parts: ["નવકાર ધ્યાનથી", "આંતરિક આનંદ,", "શાંતિ", "મળે."] },
+                    { id: 2, full: "દરેક કાર્ય વિવેકને પૂછીને કરવું જોઈએ.", parts: ["દરેક કાર્ય", "વિવેકને પૂછીને", "કરવું", "જોઈએ."] },
+                    { id: 3, full: "વિવેક આપણો સહુનો આંતરિક મિત્ર છે.", parts: ["વિવેક આપણો", "સહુનો આંતરિક", "મિત્ર", "છે."] },
+                    { id: 4, full: "વિવેક યોગ્ય-અયોગ્યને જુદા પાડી દેખાડે છે.", parts: ["વિવેક", "યોગ્ય-અયોગ્યને", "જુદા પાડી", "દેખાડે છે."] },
+                    { id: 5, full: "માનવ-પશુ વચ્ચે મુખ્ય ભેદ વિવેક છે.", parts: ["માનવ-પશુ", "વચ્ચે", "મુખ્ય ભેદ", "વિવેક છે."] },
+                    { id: 6, full: "ખરાબ દૃશ્યોથી મન પ્રતિષ્ઠા બગડે છે.", parts: ["ખરાબ દૃશ્યોથી", "મન પ્રતિષ્ઠા", "બગડે", "છે."] },
+                    { id: 7, full: "ચેતવણી છતાં વ્યસન કરવું વિવેકહીનતા છે.", parts: ["ચેતવણી છતાં", "વ્યસન કરવું", "વિવેકહીનતા", "છે."] },
+                    { id: 8, full: "મૂર્ખતા એટલે વિવેકનો સંપૂર્ણ અભાવ.", parts: ["મૂર્ખતા એટલે", "વિવેકનો", "સંપૂર્ણ", "અભાવ."] },
+                    { id: 9, full: "નુકસાનકારક વસ્તુ, ગુસ્સો તમાકુ જેવાં છે.", parts: ["નુકસાનકારક", "વસ્તુ,", "ગુસ્સો તમાકુ", "જેવાં છે."] },
+                    { id: 10, full: "વિવેક નુકસાનકર્તા બાબતોથી હંમેશા બચાવે છે.", parts: ["વિવેક", "નુકસાનકર્તા", "બાબતોથી હંમેશા", "બચાવે છે."] },
+                    { id: 11, full: "વિવેકથી કાર્ય કરવાથી જીવન સફળ બને છે.", parts: ["વિવેકથી કાર્ય", "કરવાથી જીવન", "સફળ બને", "છે."] },
+                    { id: 12, full: "વિવેકનું શિક્ષણ દેશનો સાચો ઉદ્ધાર કરે.", parts: ["વિવેકનું શિક્ષણ", "દેશનો સાચો", "ઉદ્ધાર", "કરે."] },
+                    { id: 13, full: "વિવેક ઈશ્વર તરફથી મળેલી અમૂલ્ય ભેટ છે.", parts: ["વિવેક ઈશ્વર", "તરફથી મળેલી", "અમૂલ્ય ભેટ", "છે."] },
+                    { id: 14, full: "ફોનનો બિનજરૂરી ઉપયોગ સમયનો વ્યય છે.", parts: ["ફોનનો", "બિનજરૂરી", "ઉપયોગ સમયનો", "વ્યય છે."] },
+                    { id: 15, full: "વિચાર, વાણી કર્મ વિવેકપૂર્વક કરવાં.", parts: ["વિચાર,", "વાણી કર્મ", "વિવેકપૂર્વક", "કરવાં."] } 
+                ],
+            }
+        };
+
+        // --- DOM Elements ---
+        const langEnBtn = document.getElementById('lang-en');
+        const langGuBtn = document.getElementById('lang-gu');
+        const gameTitleEl = document.getElementById('game-title');
+        const rulesSectionEl = document.getElementById('rules-section');
+        const rulesTitleEl = document.getElementById('rules-title');
+        const toggleRulesBtn = document.getElementById('toggle-rules-btn');
+        const rulesContentEl = document.getElementById('rules-content');
+        const instructionsTitleEl = document.getElementById('instructions-title');
+        const instructionsListEl = document.getElementById('instructions-list');
+        const referenceSentencesTitleEl = document.getElementById('reference-sentences-title');
+        const referenceSentencesListEl = document.getElementById('reference-sentences-list');
+        const timerLabelEl = document.getElementById('timer-label');
+        const timerValueEl = document.getElementById('timer-value');
+        const timerSecondsEl = document.getElementById('timer-seconds');
+        const gridContainerEl = document.getElementById('grid-container');
+        const optionsTitleEl = document.getElementById('options-title');
+        const optionsContainerEl = document.getElementById('options-container');
+        const resultsContainerEl = document.getElementById('results-container');
+        const resultMessageEl = document.getElementById('result-message');
+        const timeTakenMessageEl = document.getElementById('time-taken-message');
+        const correctFillsMessageEl = document.getElementById('correct-fills-message'); 
+        const incorrectFillsMessageEl = document.getElementById('incorrect-fills-message'); 
+        const correctAnswersDisplayEl = document.getElementById('correct-answers-display');
+        const correctSolutionTitleEl = document.getElementById('correct-solution-title');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const customModalEl = document.getElementById('custom-modal');
+        const modalTitleTextEl = document.getElementById('modal-title-text'); 
+        const modalMessageTextEl = document.getElementById('modal-message-text');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const undoLastBtn = document.getElementById('undo-last-btn'); 
+        const clearAllBtn = document.getElementById('clear-all-btn'); 
+        const showHintsBtn = document.getElementById('show-hints-btn'); 
+
+
+        // --- Game State Variables ---
+        let currentLang = 'en';
+        let selectedSentencesData = []; 
+        let correctGridSolution = []; 
+        let userGridState = []; 
+        let availableOptions = []; 
+        let selectedOption = null; 
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let userFillsCount = 0;
+        const totalUserFillsNeeded = 12; 
+        let rulesVisible = true;
+        let userMovesHistory = []; 
+
+        // --- Utility Functions ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function showModal(title, messageContent, isHint = false) {
+            modalTitleTextEl.textContent = title;
+            if (isHint) {
+                modalMessageTextEl.innerHTML = messageContent; 
+            } else {
+                modalMessageTextEl.textContent = messageContent;
+            }
+            customModalEl.classList.remove('hidden');
+        }
+
+        function hideModal() {
+            customModalEl.classList.add('hidden');
+        }
+        
+        // --- UI Update Functions ---
+        function updateUIText() {
+            const S = GAME_STRINGS[currentLang];
+            gameTitleEl.textContent = S.title;
+            rulesTitleEl.textContent = S.rulesTitle;
+            toggleRulesBtn.textContent = rulesVisible ? S.toggleHide : S.toggleShow;
+            instructionsTitleEl.textContent = S.instructionsTitle;
+            referenceSentencesTitleEl.textContent = S.referenceSentencesTitle;
+            timerLabelEl.textContent = S.timerLabel;
+            timerSecondsEl.textContent = S.seconds;
+            optionsTitleEl.textContent = S.optionsTitle;
+            playAgainBtn.textContent = S.playAgainButton;
+            correctSolutionTitleEl.textContent = S.correctSolutionTitle;
+            undoLastBtn.textContent = S.undoLastButton; 
+            clearAllBtn.textContent = S.clearAllButton; 
+            showHintsBtn.textContent = S.showHintsButton; 
+
+
+            instructionsListEl.innerHTML = '';
+            S.instructions.forEach(inst => {
+                const li = document.createElement('li');
+                li.textContent = inst;
+                instructionsListEl.appendChild(li);
+            });
+
+            referenceSentencesListEl.innerHTML = '';
+            S.sentences.forEach(sentence => {
+                const li = document.createElement('li');
+                li.textContent = sentence.full;
+                referenceSentencesListEl.appendChild(li);
+            });
+            
+            if (currentLang === 'en') {
+                langEnBtn.classList.add('ring-2', 'ring-offset-2', 'ring-blue-300');
+                langGuBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-300');
+            } else {
+                langGuBtn.classList.add('ring-2', 'ring-offset-2', 'ring-blue-300');
+                langEnBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-300');
+            }
+        }
+
+        function toggleRules() {
+            rulesVisible = !rulesVisible;
+            rulesContentEl.classList.toggle('hidden', !rulesVisible);
+            toggleRulesBtn.textContent = rulesVisible ? GAME_STRINGS[currentLang].toggleHide : GAME_STRINGS[currentLang].toggleShow;
+        }
+
+        // --- Game Logic Functions ---
+        function prepareGameData() {
+            const S = GAME_STRINGS[currentLang];
+            const allSentences = [...S.sentences];
+            shuffleArray(allSentences);
+            selectedSentencesData = allSentences.slice(0, 4); 
+
+            correctGridSolution = selectedSentencesData.map(s => [...s.parts]);
+            userGridState = Array(4).fill(null).map(() => Array(4).fill(null));
+            userMovesHistory = []; 
+            
+            const prefilledPartsInfo = []; 
+
+            for (let r = 0; r < 4; r++) { 
+                const randomColIndex = Math.floor(Math.random() * 4); 
+                const partToPrefill = correctGridSolution[r][randomColIndex];
+                userGridState[r][randomColIndex] = { text: partToPrefill, prefilled: true, optionElement: null }; 
+                prefilledPartsInfo.push(partToPrefill); 
+            }
+            
+            let allCorrectPartsForOptions = [];
+            correctGridSolution.forEach(rowParts => allCorrectPartsForOptions.push(...rowParts));
+
+            let partsToPlaceByUser = [];
+            allCorrectPartsForOptions.forEach(part => {
+                const prefillIndex = prefilledPartsInfo.indexOf(part);
+                if (prefillIndex > -1) {
+                    prefilledPartsInfo.splice(prefillIndex, 1); 
+                } else {
+                    partsToPlaceByUser.push(part);
+                }
+            });
+
+            availableOptions = [...partsToPlaceByUser]; 
+            shuffleArray(availableOptions);
+        }
+
+
+        function renderGrid() {
+            gridContainerEl.innerHTML = '';
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('grid-cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+
+                    const cellContentDiv = document.createElement('div');
+                    cellContentDiv.classList.add('grid-cell-content');
+
+                    if (userGridState[r][c]) {
+                        cellContentDiv.textContent = userGridState[r][c].text;
+                        if (userGridState[r][c].prefilled) {
+                            cell.classList.add('prefilled');
+                        } else {
+                            cell.classList.add('user-filled');
+                        }
+                    } else {
+                         cell.addEventListener('click', handleCellClick);
+                    }
+                    cell.appendChild(cellContentDiv);
+                    gridContainerEl.appendChild(cell);
+                }
+            }
+        }
+
+        function renderOptions() {
+            optionsContainerEl.innerHTML = '';
+            availableOptions.forEach((partText, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.classList.add('option-item');
+                optionEl.textContent = partText;
+                optionEl.dataset.optionOriginalText = partText; 
+                optionEl.addEventListener('click', handleOptionClick);
+                optionsContainerEl.appendChild(optionEl);
+            });
+        }
+
+        function checkSentenceCompletion(rowIndex) {
+            let sentenceCorrectAndComplete = true;
+            for (let c = 0; c < 4; c++) {
+                if (!userGridState[rowIndex][c] || userGridState[rowIndex][c].text !== correctGridSolution[rowIndex][c]) {
+                    sentenceCorrectAndComplete = false;
+                    break;
+                }
+            }
+
+            if (sentenceCorrectAndComplete) {
+                for (let c = 0; c < 4; c++) {
+                    const cellEl = gridContainerEl.querySelector(`.grid-cell[data-row='${rowIndex}'][data-col='${c}']`);
+                    if (cellEl) {
+                        cellEl.classList.remove('user-filled', 'incorrect'); 
+                        cellEl.classList.add('correct');
+                    }
+                }
+            }
+        }
+
+
+        function handleOptionClick(event) {
+            const clickedOptionEl = event.currentTarget;
+            if (clickedOptionEl.classList.contains('used')) return;
+
+            if (selectedOption && selectedOption.element === clickedOptionEl) {
+                clickedOptionEl.classList.remove('selected');
+                selectedOption = null;
+            } else {
+                if (selectedOption) {
+                    selectedOption.element.classList.remove('selected');
+                }
+                clickedOptionEl.classList.add('selected');
+                selectedOption = { element: clickedOptionEl, text: clickedOptionEl.textContent };
+            }
+        }
+
+        function handleCellClick(event) {
+            const cell = event.currentTarget;
+            const r = parseInt(cell.dataset.row);
+            const c = parseInt(cell.dataset.col);
+
+            if (userGridState[r][c] || cell.classList.contains('prefilled')) {
+                showModal(GAME_STRINGS[currentLang].modalCellNotEmpty, GAME_STRINGS[currentLang].modalCellNotEmpty);
+                return;
+            }
+
+            if (!selectedOption) {
+                showModal(GAME_STRINGS[currentLang].modalSelectPartFirst, GAME_STRINGS[currentLang].modalSelectPartFirst);
+                return;
+            }
+
+            const cellContentDiv = cell.querySelector('.grid-cell-content');
+            if(cellContentDiv) {
+                 cellContentDiv.textContent = selectedOption.text;
+            } else { 
+                cell.textContent = selectedOption.text; 
+            }
+           
+            userGridState[r][c] = { 
+                text: selectedOption.text, 
+                prefilled: false, 
+                optionElement: selectedOption.element 
+            };
+            userMovesHistory.push({ r, c, optionElement: selectedOption.element }); 
+
+            cell.classList.add('user-filled');
+            cell.removeEventListener('click', handleCellClick); 
+
+            selectedOption.element.classList.add('used');
+            selectedOption.element.classList.remove('selected');
+            selectedOption.element.removeEventListener('click', handleOptionClick);
+            selectedOption = null;
+
+            userFillsCount++;
+            if (userFillsCount === 1 && !timerInterval) { 
+                startTimer();
+            }
+
+            checkSentenceCompletion(r); 
+
+            if (userFillsCount === totalUserFillsNeeded) {
+                endGame();
+            }
+        }
+        
+        function startTimer() {
+            secondsElapsed = 0;
+            timerValueEl.textContent = secondsElapsed;
+            if (timerInterval) clearInterval(timerInterval); 
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerValueEl.textContent = secondsElapsed;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function handleUndoLastButton() {
+            if (userMovesHistory.length === 0) {
+                showModal(GAME_STRINGS[currentLang].modalNoMovesToUndo, GAME_STRINGS[currentLang].modalNoMovesToUndo);
+                return;
+            }
+
+            const lastMove = userMovesHistory.pop();
+            const { r, c, optionElement } = lastMove;
+
+            userGridState[r][c] = null;
+
+            const cell = gridContainerEl.querySelector(`.grid-cell[data-row='${r}'][data-col='${c}']`);
+            if (cell) {
+                const cellContent = cell.querySelector('.grid-cell-content');
+                if (cellContent) cellContent.textContent = '';
+                cell.classList.remove('user-filled', 'correct', 'incorrect');
+                cell.addEventListener('click', handleCellClick); 
+            }
+
+            if (optionElement) {
+                optionElement.classList.remove('selected', 'used');
+                optionElement.addEventListener('click', handleOptionClick);
+            }
+            
+            userFillsCount--;
+            if (userFillsCount === 0) {
+                stopTimer();
+                timerValueEl.textContent = '0'; 
+            }
+
+            for (let col = 0; col < 4; col++) {
+                const rowCell = gridContainerEl.querySelector(`.grid-cell[data-row='${r}'][data-col='${col}']`);
+                if (rowCell) {
+                    rowCell.classList.remove('correct');
+                    if(userGridState[r][col] && !userGridState[r][col].prefilled) {
+                        rowCell.classList.add('user-filled');
+                    }
+                }
+            }
+            checkSentenceCompletion(r);
+        }
+
+        function handleClearAllButton() {
+            if (userFillsCount === 0) {
+                 showModal(GAME_STRINGS[currentLang].modalNothingToClear, GAME_STRINGS[currentLang].modalNothingToClear);
+                return;
+            }
+            while(userMovesHistory.length > 0) {
+                handleUndoLastButton(); 
+            }
+        }
+
+        function handleShowHintsButton() {
+            const S = GAME_STRINGS[currentLang];
+            let hintsHtml = "<ul>";
+            selectedSentencesData.forEach(sentence => {
+                hintsHtml += `<li>${sentence.full}</li>`;
+            });
+            hintsHtml += "</ul>";
+            showModal(S.hintsModalTitle, hintsHtml, true);
+        }
+
+
+        function endGame() {
+            stopTimer();
+            let allSentencesPerfectlyCorrect = true; 
+            let userCorrectCount = 0;
+            let userIncorrectCount = 0;
+
+            optionsContainerEl.querySelectorAll('.option-item:not(.used)').forEach(opt => {
+                opt.classList.add('used'); 
+                opt.removeEventListener('click', handleOptionClick);
+            });
+            
+            for (let r_idx = 0; r_idx < 4; r_idx++) { 
+                let currentSentenceIsPerfect = true;
+                for (let c_idx = 0; c_idx < 4; c_idx++) { 
+                    const cellNode = gridContainerEl.querySelector(`.grid-cell[data-row='${r_idx}'][data-col='${c_idx}']`);
+                    const correctSolutionPart = correctGridSolution[r_idx][c_idx];
+
+                    if (userGridState[r_idx][c_idx]) { 
+                        const cellData = userGridState[r_idx][c_idx];
+                        const isPartCorrect = cellData.text === correctSolutionPart;
+
+                        if (!cellData.prefilled) { 
+                            if (isPartCorrect) {
+                                userCorrectCount++;
+                                if(cellNode) { 
+                                    cellNode.classList.remove('incorrect'); 
+                                    cellNode.classList.add('correct'); 
+                                }
+                            } else {
+                                userIncorrectCount++;
+                                if(cellNode) cellNode.classList.add('incorrect');
+                                currentSentenceIsPerfect = false;
+                            }
+                        }
+                        if (!isPartCorrect) { 
+                           currentSentenceIsPerfect = false;
+                        }
+                    } else { 
+                        userIncorrectCount++; 
+                        if(cellNode) cellNode.classList.add('incorrect');
+                        currentSentenceIsPerfect = false;
+                    }
+                }
+                if (!currentSentenceIsPerfect) {
+                    allSentencesPerfectlyCorrect = false;
+                }
+            }
+            
+            const S = GAME_STRINGS[currentLang];
+            resultMessageEl.textContent = allSentencesPerfectlyCorrect ? S.correctMessage : S.incorrectMessage;
+            timeTakenMessageEl.textContent = `${S.timeTakenText} ${secondsElapsed} ${S.seconds}`;
+            
+            correctFillsMessageEl.textContent = `${S.correctFillsText} ${userCorrectCount}`;
+            incorrectFillsMessageEl.textContent = `${S.incorrectFillsText} ${userIncorrectCount}`; 
+            
+            correctAnswersDisplayEl.innerHTML = `<h4 class="font-semibold text-center text-lg mb-2">${S.correctSolutionTitle}</h4>`;
+            selectedSentencesData.forEach((sentenceData, index) => {
+                const p = document.createElement('p');
+                p.classList.add('text-sm', 'p-1', 'bg-green-50', 'rounded');
+                p.textContent = `${index + 1}. ${sentenceData.full}`;
+                correctAnswersDisplayEl.appendChild(p);
+            });
+
+            resultsContainerEl.classList.remove('hidden');
+        }
+
+        function resetGame() {
+            stopTimer();
+            secondsElapsed = 0;
+            userFillsCount = 0;
+            selectedOption = null;
+            timerValueEl.textContent = '0';
+            userMovesHistory = []; 
+            
+            resultsContainerEl.classList.add('hidden');
+            gridContainerEl.innerHTML = '';
+            optionsContainerEl.innerHTML = '';
+            
+            prepareGameData();
+            renderGrid();
+            renderOptions();
+        }
+        
+        function initGame() {
+            updateUIText(); 
+            if (!rulesVisible) { 
+                rulesContentEl.classList.add('hidden');
+            }
+            resetGame();
+        }
+
+        // --- Event Listeners ---
+        langEnBtn.addEventListener('click', () => {
+            currentLang = 'en';
+            initGame();
+        });
+        langGuBtn.addEventListener('click', () => {
+            currentLang = 'gu';
+            initGame();
+        });
+        toggleRulesBtn.addEventListener('click', toggleRules);
+        playAgainBtn.addEventListener('click', resetGame);
+        modalCloseBtn.addEventListener('click', hideModal);
+        undoLastBtn.addEventListener('click', handleUndoLastButton); 
+        clearAllBtn.addEventListener('click', handleClearAllButton); 
+        showHintsBtn.addEventListener('click', handleShowHintsButton); 
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => { 
+            currentLang = 'en'; 
+            initGame();
+        });
+
+    </script>
+</body>
+</html>
